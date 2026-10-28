@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://basin-computer.local/schemas/geojson.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dataset_version",
+    "library_version",
+    "data_library_version",
+    "type",
+    "features"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "0.2",
+        "0.3"
+      ]
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "library_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data_library_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "const": "FeatureCollection"
+    },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "properties",
+          "geometry"
+        ],
+        "properties": {
+          "type": {
+            "const": "Feature"
+          },
+          "properties": {
+            "type": "object"
+          },
+          "geometry": {
+            "type": "object",
+            "required": [
+              "type",
+              "coordinates"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "Point",
+                  "Polygon",
+                  "MultiPolygon"
+                ]
+              },
+              "coordinates": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "geometry": {
+                  "properties": {
+                    "type": {
+                      "const": "Point"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "basin_id",
+                    "station_id",
+                    "name",
+                    "role",
+                    "source_url"
+                  ],
+                  "properties": {
+                    "basin_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "station_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "role": {
+                      "enum": [
+                        "streamflow",
+                        "rain"
+                      ]
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "pattern": "^https://"
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "basin_id",
+                    "name",
+                    "area_km2",
+                    "source_id",
+                    "cand_id"
+                  ],
+                  "properties": {
+                    "basin_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "area_km2": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "cand_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "provenance": {
+      "type": "object"
+    }
+  }
+}

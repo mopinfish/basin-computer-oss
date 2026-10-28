@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://basin-computer.local/schemas/series.schema.json",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "origin_time",
+      "target_time",
+      "accepted",
+      "reason",
+      "partition",
+      "q",
+      "rain",
+      "observed",
+      "prediction"
+    ],
+    "properties": {
+      "origin_time": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+      },
+      "target_time": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+      },
+      "accepted": {
+        "type": "boolean"
+      },
+      "reason": {
+        "enum": [
+          "accepted",
+          "missing",
+          "context",
+          "origin_before_cutoff"
+        ]
+      },
+      "partition": {
+        "enum": [
+          "train",
+          "valid",
+          "test"
+        ]
+      },
+      "q": {
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "rain": {
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "observed": {
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "prediction": {
+        "type": [
+          "number",
+          "null"
+        ]
+      }
+    }
+  }
+}

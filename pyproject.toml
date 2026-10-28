@@ -1,0 +1,3 @@
+[tool.pytest.ini_options]
+testpaths = ["tests", "packages/basin-rc/tests"]
+pythonpath = ["packages/basin-rc/src"]

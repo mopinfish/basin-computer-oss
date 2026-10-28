@@ -1,0 +1,546 @@
+{
+  "results": {
+    "schema_version": "0.2",
+    "dataset_version": "test-candidate",
+    "library_version": "0.1.0a1",
+    "data_library_version": "0.1.0a1",
+    "dataset_status": "local_candidate_not_public_release",
+    "public_release_blockers": [
+      "test fixture"
+    ],
+    "library_name": "basin-rc",
+    "data_library_name": "basin-data",
+    "generated_at": "2024-01-01T00:00:00+00:00",
+    "basins_path": "basins.geojson",
+    "stations_path": "stations.geojson",
+    "artifact_sha256": {
+      "basins.geojson": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stations.geojson": "0000000000000000000000000000000000000000000000000000000000000000",
+      "predictions/a.csv": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "results": [
+      {
+        "basin_id": "a",
+        "task": "forecast",
+        "status": "local_candidate_not_public_release",
+        "inputs": [
+          "q",
+          "rain"
+        ],
+        "target": "q",
+        "horizon_h": 1,
+        "tau_h": 0,
+        "alpha": 1.0,
+        "standardize": true,
+        "train_period_start": "2024-01-01T00:00:00+00:00",
+        "train_period_end": "2024-01-01T10:00:00+00:00",
+        "valid_period_start": "2024-01-01T10:00:00+00:00",
+        "valid_period_end": "2024-01-01T20:00:00+00:00",
+        "period_start": "2024-01-01T20:00:00+00:00",
+        "period_end": "2024-01-02T06:00:00+00:00",
+        "split": "test",
+        "metric": "NSE",
+        "value": null,
+        "nse": null,
+        "nse_reason": "constant_target",
+        "rmse": 1.0,
+        "n_samples": 7,
+        "n_context": 0,
+        "n_excluded": 3,
+        "excluded_by_reason": {
+          "missing": 2,
+          "origin_before_cutoff": 1
+        },
+        "fit_cutoff": "2024-01-01T10:00:00+00:00",
+        "selection_cutoff": "2024-01-01T20:00:00+00:00",
+        "validation_rmse": {
+          "0.1": 1.0,
+          "1.0": 1.0,
+          "10.0": 1.0
+        },
+        "partitions": {
+          "train": {
+            "n_samples": 9,
+            "n_context": 1,
+            "n_excluded": 0,
+            "excluded_by_reason": {
+              "missing": 0,
+              "origin_before_cutoff": 0
+            }
+          },
+          "valid": {
+            "n_samples": 9,
+            "n_context": 0,
+            "n_excluded": 1,
+            "excluded_by_reason": {
+              "missing": 0,
+              "origin_before_cutoff": 1
+            }
+          },
+          "test": {
+            "n_samples": 7,
+            "n_context": 0,
+            "n_excluded": 3,
+            "excluded_by_reason": {
+              "missing": 2,
+              "origin_before_cutoff": 1
+            }
+          }
+        },
+        "prediction_path": "predictions/a.csv",
+        "baselines": {
+          "persistence": {
+            "method": "origin_observation",
+            "horizon_h": 1,
+            "rmse": 0.0,
+            "nse": null,
+            "nse_reason": "constant_target",
+            "n_samples": 7,
+            "n_context": 0,
+            "n_excluded": 3,
+            "excluded_by_reason": {
+              "missing": 2,
+              "origin_before_cutoff": 1
+            }
+          }
+        }
+      }
+    ],
+    "implementation": {
+      "generator_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "source_commit": null,
+      "source_dirty": null,
+      "packages": {
+        "basin-rc": {
+          "version": "0.1.0a1",
+          "python_sources_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "wheel_sha256": null
+        },
+        "basin-data": {
+          "version": "0.1.0a1",
+          "python_sources_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "wheel_sha256": null
+        }
+      }
+    }
+  },
+  "basins": {
+    "schema_version": "0.2",
+    "dataset_version": "test-candidate",
+    "library_version": "0.1.0a1",
+    "data_library_version": "0.1.0a1",
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "basin_id": "a",
+          "name": "Fixture",
+          "area_km2": 1.0,
+          "source_id": "a",
+          "cand_id": null
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                130,
+                33
+              ],
+              [
+                131,
+                33
+              ],
+              [
+                131,
+                34
+              ],
+              [
+                130,
+                33
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "stations": {
+    "schema_version": "0.2",
+    "dataset_version": "test-candidate",
+    "library_version": "0.1.0a1",
+    "data_library_version": "0.1.0a1",
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "basin_id": "a",
+          "station_id": "a",
+          "name": "streamflow",
+          "role": "streamflow",
+          "source_url": "https://example.invalid/synthetic"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            130,
+            33
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "basin_id": "a",
+          "station_id": "rain",
+          "name": "rain",
+          "role": "rain",
+          "source_url": "https://example.invalid/synthetic"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            130,
+            33
+          ]
+        }
+      }
+    ]
+  },
+  "series": {
+    "a": [
+      {
+        "origin_time": "2023-12-31T23:00:00+00:00",
+        "target_time": "2024-01-01T00:00:00+00:00",
+        "accepted": false,
+        "reason": "context",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T00:00:00+00:00",
+        "target_time": "2024-01-01T01:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T01:00:00+00:00",
+        "target_time": "2024-01-01T02:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T02:00:00+00:00",
+        "target_time": "2024-01-01T03:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T03:00:00+00:00",
+        "target_time": "2024-01-01T04:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T04:00:00+00:00",
+        "target_time": "2024-01-01T05:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T05:00:00+00:00",
+        "target_time": "2024-01-01T06:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T06:00:00+00:00",
+        "target_time": "2024-01-01T07:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T07:00:00+00:00",
+        "target_time": "2024-01-01T08:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T08:00:00+00:00",
+        "target_time": "2024-01-01T09:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "train",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T09:00:00+00:00",
+        "target_time": "2024-01-01T10:00:00+00:00",
+        "accepted": false,
+        "reason": "origin_before_cutoff",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T10:00:00+00:00",
+        "target_time": "2024-01-01T11:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T11:00:00+00:00",
+        "target_time": "2024-01-01T12:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T12:00:00+00:00",
+        "target_time": "2024-01-01T13:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T13:00:00+00:00",
+        "target_time": "2024-01-01T14:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T14:00:00+00:00",
+        "target_time": "2024-01-01T15:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T15:00:00+00:00",
+        "target_time": "2024-01-01T16:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T16:00:00+00:00",
+        "target_time": "2024-01-01T17:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T17:00:00+00:00",
+        "target_time": "2024-01-01T18:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T18:00:00+00:00",
+        "target_time": "2024-01-01T19:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "valid",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T19:00:00+00:00",
+        "target_time": "2024-01-01T20:00:00+00:00",
+        "accepted": false,
+        "reason": "origin_before_cutoff",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T20:00:00+00:00",
+        "target_time": "2024-01-01T21:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-01T21:00:00+00:00",
+        "target_time": "2024-01-01T22:00:00+00:00",
+        "accepted": false,
+        "reason": "missing",
+        "partition": "test",
+        "q": null,
+        "rain": 0.0,
+        "observed": null,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T22:00:00+00:00",
+        "target_time": "2024-01-01T23:00:00+00:00",
+        "accepted": false,
+        "reason": "missing",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": null
+      },
+      {
+        "origin_time": "2024-01-01T23:00:00+00:00",
+        "target_time": "2024-01-02T00:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-02T00:00:00+00:00",
+        "target_time": "2024-01-02T01:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-02T01:00:00+00:00",
+        "target_time": "2024-01-02T02:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-02T02:00:00+00:00",
+        "target_time": "2024-01-02T03:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-02T03:00:00+00:00",
+        "target_time": "2024-01-02T04:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      },
+      {
+        "origin_time": "2024-01-02T04:00:00+00:00",
+        "target_time": "2024-01-02T05:00:00+00:00",
+        "accepted": true,
+        "reason": "accepted",
+        "partition": "test",
+        "q": 2.0,
+        "rain": 0.0,
+        "observed": 2.0,
+        "prediction": 3.0
+      }
+    ]
+  }
+}

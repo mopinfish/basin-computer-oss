@@ -1,0 +1,118 @@
+[
+  {
+    "name": "valid",
+    "accept": true
+  },
+  {
+    "name": "empty",
+    "accept": true
+  },
+  {
+    "name": "null_gap",
+    "accept": true
+  },
+  {
+    "name": "optional_source",
+    "accept": true
+  },
+  {
+    "name": "different_unit",
+    "accept": true
+  },
+  {
+    "name": "different_conditions",
+    "accept": true
+  },
+  {
+    "name": "not_array",
+    "accept": false
+  },
+  {
+    "name": "not_object",
+    "accept": false
+  },
+  {
+    "name": "missing_label",
+    "accept": false
+  },
+  {
+    "name": "missing_unit",
+    "accept": false
+  },
+  {
+    "name": "missing_conditions",
+    "accept": false
+  },
+  {
+    "name": "missing_style",
+    "accept": false
+  },
+  {
+    "name": "missing_values",
+    "accept": false
+  },
+  {
+    "name": "unknown_field",
+    "accept": false
+  },
+  {
+    "name": "bad_id",
+    "accept": false
+  },
+  {
+    "name": "reserved_id",
+    "accept": false
+  },
+  {
+    "name": "duplicate_id",
+    "accept": false
+  },
+  {
+    "name": "blank_label",
+    "accept": false
+  },
+  {
+    "name": "blank_unit",
+    "accept": false
+  },
+  {
+    "name": "blank_conditions",
+    "accept": false
+  },
+  {
+    "name": "bad_style",
+    "accept": false
+  },
+  {
+    "name": "bad_value",
+    "accept": false
+  },
+  {
+    "name": "boolean_value",
+    "accept": false
+  },
+  {
+    "name": "overflow_value",
+    "accept": false
+  },
+  {
+    "name": "short_values",
+    "accept": false
+  },
+  {
+    "name": "long_values",
+    "accept": false
+  },
+  {
+    "name": "bad_source",
+    "accept": false
+  },
+  {
+    "name": "unicode_nel",
+    "accept": false
+  },
+  {
+    "name": "unicode_bom",
+    "accept": false
+  }
+]

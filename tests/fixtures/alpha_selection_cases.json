@@ -1,0 +1,365 @@
+[
+  {
+    "name": "integer-key",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "decimal-key",
+    "alpha": 1,
+    "validation_rmse": {
+      "1.0": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "scientific-key",
+    "alpha": 1,
+    "validation_rmse": {
+      "1e0": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "signed-key",
+    "alpha": 1,
+    "validation_rmse": {
+      "+1.": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "fraction-key",
+    "alpha": 0.5,
+    "validation_rmse": {
+      ".5": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "zero",
+    "alpha": 0,
+    "validation_rmse": {
+      "-0": 0
+    },
+    "accept": true
+  },
+  {
+    "name": "arbitrary-candidates",
+    "alpha": 2.5,
+    "validation_rmse": {
+      "0": 3,
+      "2.5": 2,
+      "20": 4
+    },
+    "accept": true
+  },
+  {
+    "name": "tie-larger",
+    "alpha": 10,
+    "validation_rmse": {
+      "0.1": 2,
+      "1": 2,
+      "10": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "tie-smaller",
+    "alpha": 0.1,
+    "validation_rmse": {
+      "10": 2,
+      "0.1": 2,
+      "1": 2
+    },
+    "accept": true
+  },
+  {
+    "name": "missing-selected",
+    "alpha": 1,
+    "validation_rmse": {
+      "0.1": 1,
+      "10": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "not-minimum",
+    "alpha": 1,
+    "validation_rmse": {
+      "0.1": 1,
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "strict-minimum",
+    "alpha": 1,
+    "validation_rmse": {
+      "0.1": 1,
+      "1": 1.0000000000000002
+    },
+    "accept": false
+  },
+  {
+    "name": "numeric-duplicate",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": 2,
+      "1.0": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "exponent-duplicate",
+    "alpha": 1,
+    "validation_rmse": {
+      "1e0": 2,
+      "1.0": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "signed-zero-duplicate",
+    "alpha": 0,
+    "validation_rmse": {
+      "+0": 2,
+      "-0": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "rounded-duplicate",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": 2,
+      "1.00000000000000001": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "negative-candidate",
+    "alpha": 1,
+    "validation_rmse": {
+      "-1": 3,
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "overflow-candidate",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": 2,
+      "1e309": 3
+    },
+    "accept": false
+  },
+  {
+    "name": "empty-candidates",
+    "alpha": 1,
+    "validation_rmse": {},
+    "accept": false
+  },
+  {
+    "name": "array-candidates",
+    "alpha": 1,
+    "validation_rmse": [
+      2
+    ],
+    "accept": false
+  },
+  {
+    "name": "null-candidates",
+    "alpha": 1,
+    "validation_rmse": null,
+    "accept": false
+  },
+  {
+    "name": "negative-rmse",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": -1
+    },
+    "accept": false
+  },
+  {
+    "name": "boolean-rmse",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": true
+    },
+    "accept": false
+  },
+  {
+    "name": "string-rmse",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": "2"
+    },
+    "accept": false
+  },
+  {
+    "name": "null-rmse",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": null
+    },
+    "accept": false
+  },
+  {
+    "name": "negative-selected",
+    "alpha": -1,
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "boolean-selected",
+    "alpha": true,
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "string-selected",
+    "alpha": "1",
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-' 1'",
+    "alpha": 1,
+    "validation_rmse": {
+      " 1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1 '",
+    "alpha": 1,
+    "validation_rmse": {
+      "1 ": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1\\n'",
+    "alpha": 1,
+    "validation_rmse": {
+      "1\n": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1\\r'",
+    "alpha": 1,
+    "validation_rmse": {
+      "1\r": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1_0'",
+    "alpha": 1,
+    "validation_rmse": {
+      "1_0": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'１'",
+    "alpha": 1,
+    "validation_rmse": {
+      "１": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'0x1'",
+    "alpha": 1,
+    "validation_rmse": {
+      "0x1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'NaN'",
+    "alpha": 1,
+    "validation_rmse": {
+      "NaN": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'Infinity'",
+    "alpha": 1,
+    "validation_rmse": {
+      "Infinity": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-''",
+    "alpha": 1,
+    "validation_rmse": {
+      "": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'.'",
+    "alpha": 1,
+    "validation_rmse": {
+      ".": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1e'",
+    "alpha": 1,
+    "validation_rmse": {
+      "1e": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "invalid-key-'1+'",
+    "alpha": 1,
+    "validation_rmse": {
+      "1+": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "overflow-selected",
+    "alpha": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": false
+  },
+  {
+    "name": "overflow-rmse",
+    "alpha": 1,
+    "validation_rmse": {
+      "1": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    },
+    "accept": false
+  },
+  {
+    "name": "null-selected",
+    "alpha": null,
+    "validation_rmse": {
+      "1": 2
+    },
+    "accept": false
+  }
+]

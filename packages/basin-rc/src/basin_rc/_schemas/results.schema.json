@@ -1,0 +1,705 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://basin-computer.local/schemas/results.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dataset_version",
+    "library_version",
+    "data_library_version",
+    "dataset_status",
+    "public_release_blockers",
+    "library_name",
+    "data_library_name",
+    "generated_at",
+    "basins_path",
+    "stations_path",
+    "artifact_sha256",
+    "results",
+    "implementation"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "0.2",
+        "0.3"
+      ]
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "library_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data_library_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataset_status": {
+      "const": "local_candidate_not_public_release"
+    },
+    "public_release_blockers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "library_name": {
+      "const": "basin-rc"
+    },
+    "data_library_name": {
+      "const": "basin-data"
+    },
+    "generated_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+    },
+    "basins_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stations_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_sha256": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+      }
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "train_period_start",
+          "train_period_end",
+          "valid_period_start",
+          "valid_period_end",
+          "period_start",
+          "period_end",
+          "fit_cutoff",
+          "selection_cutoff",
+          "n_samples",
+          "n_excluded",
+          "n_context",
+          "tau_h",
+          "horizon_h",
+          "basin_id",
+          "task",
+          "status",
+          "inputs",
+          "target",
+          "alpha",
+          "standardize",
+          "split",
+          "metric",
+          "value",
+          "nse",
+          "rmse",
+          "nse_reason",
+          "excluded_by_reason",
+          "prediction_path",
+          "validation_rmse",
+          "partitions",
+          "baselines"
+        ],
+        "properties": {
+          "train_period_start": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "train_period_end": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "valid_period_start": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "valid_period_end": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "period_start": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "period_end": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "fit_cutoff": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "selection_cutoff": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:\\+00:00|Z)(?![\\s\\S])"
+          },
+          "n_samples": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_excluded": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_context": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tau_h": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "horizon_h": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "basin_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "task": {
+            "const": "forecast"
+          },
+          "status": {
+            "const": "local_candidate_not_public_release"
+          },
+          "inputs": {
+            "const": [
+              "q",
+              "rain"
+            ]
+          },
+          "target": {
+            "const": "q"
+          },
+          "alpha": {
+            "type": "number",
+            "minimum": 0
+          },
+          "standardize": {
+            "type": "boolean"
+          },
+          "split": {
+            "const": "test"
+          },
+          "metric": {
+            "const": "NSE"
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "nse": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "nse_reason": {
+            "enum": [
+              null,
+              "constant_target"
+            ]
+          },
+          "excluded_by_reason": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "missing",
+              "origin_before_cutoff"
+            ],
+            "properties": {
+              "missing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "origin_before_cutoff": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "prediction_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "validation_rmse": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minProperties": 1
+          },
+          "partitions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "train",
+              "valid",
+              "test"
+            ],
+            "properties": {
+              "train": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "n_samples",
+                  "n_excluded",
+                  "n_context",
+                  "excluded_by_reason"
+                ],
+                "properties": {
+                  "n_samples": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_excluded": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_context": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "excluded_by_reason": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "missing",
+                      "origin_before_cutoff"
+                    ],
+                    "properties": {
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "origin_before_cutoff": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "valid": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "n_samples",
+                  "n_excluded",
+                  "n_context",
+                  "excluded_by_reason"
+                ],
+                "properties": {
+                  "n_samples": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_excluded": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_context": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "excluded_by_reason": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "missing",
+                      "origin_before_cutoff"
+                    ],
+                    "properties": {
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "origin_before_cutoff": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "test": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "n_samples",
+                  "n_excluded",
+                  "n_context",
+                  "excluded_by_reason"
+                ],
+                "properties": {
+                  "n_samples": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_excluded": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_context": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "excluded_by_reason": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "missing",
+                      "origin_before_cutoff"
+                    ],
+                    "properties": {
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "origin_before_cutoff": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "baselines": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "persistence"
+            ],
+            "properties": {
+              "persistence": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rmse",
+                  "nse",
+                  "nse_reason",
+                  "n_samples",
+                  "n_excluded",
+                  "excluded_by_reason",
+                  "n_context",
+                  "method",
+                  "horizon_h"
+                ],
+                "properties": {
+                  "rmse": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "nse": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "nse_reason": {
+                    "enum": [
+                      null,
+                      "constant_target"
+                    ]
+                  },
+                  "n_samples": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "n_excluded": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "excluded_by_reason": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "missing",
+                      "origin_before_cutoff"
+                    ],
+                    "properties": {
+                      "missing": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "origin_before_cutoff": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  },
+                  "n_context": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "method": {
+                    "const": "origin_observation"
+                  },
+                  "horizon_h": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          },
+          "extensions": {
+            "type": "object",
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "label",
+                    "unit",
+                    "evaluation_conditions",
+                    "style",
+                    "values"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9_-]*(?![\\s\\S])",
+                      "not": {
+                        "enum": [
+                          "observed",
+                          "prediction",
+                          "persistence",
+                          "model",
+                          "q",
+                          "rain"
+                        ]
+                      }
+                    },
+                    "label": {
+                      "type": "string",
+                      "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"
+                    },
+                    "evaluation_conditions": {
+                      "type": "string",
+                      "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"
+                    },
+                    "source": {
+                      "type": "string",
+                      "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"
+                    },
+                    "style": {
+                      "enum": [
+                        "solid",
+                        "dashed",
+                        "dotted"
+                      ]
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "synthetic": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator_sha256",
+        "source_commit",
+        "source_dirty",
+        "packages"
+      ],
+      "properties": {
+        "generator_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "source_commit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "packages": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basin-rc",
+            "basin-data"
+          ],
+          "properties": {
+            "basin-rc": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "python_sources_sha256",
+                "wheel_sha256"
+              ],
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "python_sources_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                },
+                "wheel_sha256": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "basin-data": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "python_sources_sha256",
+                "wheel_sha256"
+              ],
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "python_sources_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                },
+                "wheel_sha256": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_commit": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "source_commit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_dirty": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "extensions": {
+      "type": "object",
+      "properties": {
+        "synthetic": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "0.2"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "extensions"
+          ]
+        },
+        "properties": {
+          "results": {
+            "items": {
+              "not": {
+                "required": [
+                  "extensions"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
