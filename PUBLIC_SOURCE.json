@@ -1,5 +1,5 @@
 {
-  "source_commit": "f75d6d3049c41c81d14efd215b2255267e9aa49b",
+  "source_commit": "fa42321432749be4dfbe5c8a56542dce408a1ad8",
   "source_dirty": false,
   "scope": "basin-rc and synthetic viewer only; no source observations or Git history",
   "files": {
@@ -42,7 +42,7 @@
     "tests/test_review_preview.py": "b2be40b58c8efac9110f058591ea3142ee87eead086f213db87b505d86638dc6",
     "tests/test_varcoef_fit.py": "34f90b65289a5747f7cb425564da076108a5b16ea1806a912c733a4b97965ca3",
     "tests/test_varying_coefficient.py": "165f2c557899d4d9bad0e1af472965d9613930c495d36acefbbfd18670a022ae",
-    "viewer/app.mjs": "0952734f1b63f2a317c865111050f7126a4c3861805759c3c586b730e067f9c8",
+    "viewer/app.mjs": "5ab5e5841f75f6e2c8df9389bbbf62caf772e67564f4a8e66115bfb334612d0c",
     "viewer/contract.mjs": "2a8eb63dcba0915ad50a3d0d52700a21d67bd1826043a4f76a098ae1b842071c",
     "viewer/evaluation-policy.html": "72bcfdb943c6bea457da6cebcc18a2f210aef81a0fb79843c897530ab37ae5b7",
     "viewer/evaluation-table-dom.mjs": "d8bf9c63b55da326c82a5e363f8bff64cffcc072849377ecb63d272f4d417c2a",

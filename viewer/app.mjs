@@ -280,7 +280,13 @@ function inspect(index) {
   guide.append(svgNode('text',{x:Math.min(865,targetX+4),y:58,fill:'#254f70','font-size':13},'対象'));
   guide.append(svgNode('text',{x:Math.min(790,Math.max(180,(startX+targetX)/2)),'text-anchor':'middle',y:40,fill:'#754313','font-size':13},outside?'開始時刻は表示範囲外':`開始 → 対象（${selected.result.horizon_h}時間後）`));
   guide.append(svgNode('title',{},`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}${outside?'（開始時刻は表示範囲外）':''}`));
-  if(!outside&&targetX-originX<65) guide.append(svgNode('text',{x:70,y:74,fill:'#754313','font-size':13},'開始と対象が近接：日時指定で拡大'));
+  let proximityNote=$('forecast-proximity-note');
+  if(!proximityNote) {
+    proximityNote=node('p','開始と対象が近接しています。日時を指定すると拡大できます。','chart-note');
+    proximityNote.id='forecast-proximity-note';
+    chart.parentElement.after(proximityNote);
+  }
+  proximityNote.hidden=outside||targetX-originX>=65;
   chart.append(guide);
   const position=65+index/Math.max(displayed.length-1,1)*835;
   for(const cursor of document.querySelectorAll('.inspection-cursor')) {cursor.setAttribute('x1',position);cursor.setAttribute('x2',position);}
