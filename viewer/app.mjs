@@ -278,7 +278,6 @@ function inspect(index) {
   guide.append(svgNode('path',{d:`M ${targetX-arrowSize} ${24-arrowSize/2} L ${targetX} 24 L ${targetX-arrowSize} ${24+arrowSize/2}`,fill:'none',stroke:'#87531c','stroke-width':2}));
   if(!outside&&targetX-originX>=65) guide.append(svgNode('text',{x:originX,y:12,fill:'#754313','font-size':13},'開始'));
   guide.append(svgNode('text',{x:Math.min(865,targetX+4),y:58,fill:'#254f70','font-size':13},'対象'));
-  guide.append(svgNode('text',{x:Math.min(790,Math.max(180,(startX+targetX)/2)),'text-anchor':'middle',y:40,fill:'#754313','font-size':13},outside?'開始時刻は表示範囲外':`開始 → 対象（${selected.result.horizon_h}時間後）`));
   guide.append(svgNode('title',{},`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}${outside?'（開始時刻は表示範囲外）':''}`));
   let proximityNote=$('forecast-proximity-note');
   if(!proximityNote) {
@@ -286,7 +285,8 @@ function inspect(index) {
     proximityNote.id='forecast-proximity-note';
     chart.parentElement.after(proximityNote);
   }
-  proximityNote.hidden=outside||targetX-originX>=65;
+  proximityNote.hidden=false;
+  proximityNote.textContent=`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}（${selected.result.horizon_h}時間後）${outside?'。開始時刻は表示範囲外です。':targetX-originX<65?'。開始と対象が近接しています。日時指定で拡大できます。':''}`;
   chart.append(guide);
   const position=65+index/Math.max(displayed.length-1,1)*835;
   for(const cursor of document.querySelectorAll('.inspection-cursor')) {cursor.setAttribute('x1',position);cursor.setAttribute('x2',position);}
