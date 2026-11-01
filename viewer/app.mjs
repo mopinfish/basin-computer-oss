@@ -7,7 +7,7 @@ import {createSceneHistory} from './scene-history.mjs';
 import {buildEvaluationTable} from './evaluation-table.mjs';
 import {evaluationTableDOM,updateEvaluationSelection} from './evaluation-table-dom.mjs';
 import {bindViewTabs,restoreRemovedPanelFocus} from './view-tabs.mjs';
-import {formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
+import {originObservation,formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
 
 const $=id=>document.getElementById(id);
 let periodMenu;
@@ -231,7 +231,7 @@ function drawCharts(rows) {
   for(const svg of [q,rain]) attachChartInspection(svg,svg.parentElement,svg===q?235:175);
 }
 function attachChartInspection(svg,scroll,height) {
-  svg.append(svgNode('line',{class:'inspection-cursor',x1:65,x2:65,y1:14,y2:height-65,stroke:'#849b9d','stroke-dasharray':'3 3','pointer-events':'none'}));
+  svg.append(svgNode('line',{class:'inspection-cursor',x1:65,x2:65,y1:14,y2:height-65,stroke:'#254f70','stroke-width':2,'stroke-dasharray':'3 3','pointer-events':'none'}));
   if(scroll.dataset.inspectionBound) return;
   scroll.dataset.inspectionBound='true';
   bindChartInspection(scroll,()=>displayed.length,()=>Number($('time-inspector').value),(index,source)=>{inspect(index);scrollInspection(index);recordScene('replace');inspectionNotice.announce(displayed[index].target_time,source);},svg);
@@ -253,7 +253,8 @@ function inspect(index) {
   $('lead-time').textContent=`${selected.result.horizon_h}時間`;
   const list=node('dl');
   for(const [label,value] of [
-    ['観測',`${missingValue(row.observed)} m³/s`],
+    ['対象時刻の観測',`${missingValue(row.observed)} m³/s`],
+    ['開始時刻の観測',`${missingValue(originObservation(selected.rows,row))} m³/s`],
     ['6時間先',prediction===null?'未生成 / 不採用':`${prediction.toFixed(3)} m³/s`],
     ['持続予測',persistenceReference(row,comparison)],
     ['雨量',`${missingValue(row.rain)} mm`],
@@ -262,6 +263,31 @@ function inspect(index) {
     ['採否',reasonLabel(row.reason)]]) list.append(node('dt',label),node('dd',value));
   for(const item of extraSeries.filter(item=>selectedSeries.has(item.key))) list.append(node('dt',item.label),node('dd',seriesReference(item,row)));
   $('inspection-values').replaceChildren(list);
+  const chart=$('q-chart');
+  chart.querySelector('.forecast-correspondence')?.remove();
+  const origin=Date.parse(row.origin_time);
+  const first=Date.parse(displayed[0].target_time),last=Date.parse(displayed.at(-1).target_time);
+  const targetX=65+index/Math.max(displayed.length-1,1)*835;
+  const outside=origin<first||origin>last;
+  const originX=65+(origin-first)/Math.max(last-first,1)*835;
+  const guide=svgNode('g',{class:'forecast-correspondence','pointer-events':'none'});
+  const startX=outside?(origin<first?65:900):originX;
+  if(!outside) guide.append(svgNode('line',{x1:originX,x2:originX,y1:14,y2:170,stroke:'#87531c','stroke-dasharray':'6 3'}));
+  guide.append(svgNode('line',{x1:startX,x2:targetX,y1:24,y2:24,stroke:'#87531c','stroke-width':2}));
+  const arrowSize=Math.min(6,Math.max(0,targetX-startX));
+  guide.append(svgNode('path',{d:`M ${targetX-arrowSize} ${24-arrowSize/2} L ${targetX} 24 L ${targetX-arrowSize} ${24+arrowSize/2}`,fill:'none',stroke:'#87531c','stroke-width':2}));
+  if(!outside&&targetX-originX>=65) guide.append(svgNode('text',{x:originX,y:12,fill:'#754313','font-size':13},'開始'));
+  guide.append(svgNode('text',{x:Math.min(865,targetX+4),y:58,fill:'#254f70','font-size':13},'対象'));
+  guide.append(svgNode('title',{},`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}${outside?'（開始時刻は表示範囲外）':''}`));
+  let proximityNote=$('forecast-proximity-note');
+  if(!proximityNote) {
+    proximityNote=node('p','開始と対象が近接しています。日時を指定すると拡大できます。','chart-note');
+    proximityNote.id='forecast-proximity-note';
+    chart.parentElement.after(proximityNote);
+  }
+  proximityNote.hidden=false;
+  proximityNote.textContent=`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}（${selected.result.horizon_h}時間後）${outside?'。開始時刻は表示範囲外です。':targetX-originX<65?'。開始と対象が近接しています。日時指定で拡大できます。':''}`;
+  chart.append(guide);
   const position=65+index/Math.max(displayed.length-1,1)*835;
   for(const cursor of document.querySelectorAll('.inspection-cursor')) {cursor.setAttribute('x1',position);cursor.setAttribute('x2',position);}
 }

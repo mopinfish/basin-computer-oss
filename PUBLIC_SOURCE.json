@@ -1,5 +1,5 @@
 {
-  "source_commit": "56df701fa1373b6f34dc690df4975329e2b2d74b",
+  "source_commit": "8713f532e79bdbfb619108e880426e8b7046eea8",
   "source_dirty": false,
   "scope": "basin-rc and synthetic viewer only; no source observations or Git history",
   "files": {
@@ -42,7 +42,7 @@
     "tests/test_review_preview.py": "b2be40b58c8efac9110f058591ea3142ee87eead086f213db87b505d86638dc6",
     "tests/test_varcoef_fit.py": "34f90b65289a5747f7cb425564da076108a5b16ea1806a912c733a4b97965ca3",
     "tests/test_varying_coefficient.py": "165f2c557899d4d9bad0e1af472965d9613930c495d36acefbbfd18670a022ae",
-    "viewer/app.mjs": "71adad4bb49c1d8bed92c31660960ce697d791731ad3c83d6f4c64441b6b1a53",
+    "viewer/app.mjs": "5abf15c50b813b0c70f3f6bd5948cb0f73801cd51f5d6c03b1e5c6225fb37dcd",
     "viewer/contract.mjs": "2a8eb63dcba0915ad50a3d0d52700a21d67bd1826043a4f76a098ae1b842071c",
     "viewer/evaluation-policy.html": "72bcfdb943c6bea457da6cebcc18a2f210aef81a0fb79843c897530ab37ae5b7",
     "viewer/evaluation-table-dom.mjs": "d8bf9c63b55da326c82a5e363f8bff64cffcc072849377ecb63d272f4d417c2a",
@@ -61,6 +61,7 @@
     "viewer/tests/contract.test.mjs": "1d8c5b01bf7db1bb2dcd23763617f0cfbaefaa14a9bc44950c30fae472ad4005",
     "viewer/tests/evaluation-table-dom.test.mjs": "11c10c280c54eeb8b768ba36cc2928ccfdc7081b3088c736fc89d42a10056944",
     "viewer/tests/evaluation-table.test.mjs": "839f39a3d50977edafb5f18983e0d18e77383991d08d9b1af52662016788cea6",
+    "viewer/tests/forecast-origin.test.mjs": "67c9a9dae06fd54acf16308e307e2b99783214103dc61e5680bcbad4c1dd8098",
     "viewer/tests/inspection-notice.test.mjs": "924ae3160b6447dd92f4361f08b576c2aba00d558076678b64df676a92d5e69b",
     "viewer/tests/overview.test.mjs": "1f8f8648360fd6094e5633bc9a9c6aa170ea2f026abf1262465c00dc593aa914",
     "viewer/tests/range.test.mjs": "8925e9406aef5285707307d59df6355359e327a31fe29e79046c33eed6e26ff7",
@@ -69,7 +70,7 @@
     "viewer/tests/ui.test.mjs": "52c617d1aa062ebda5ca1080841b4fa3fa9027b69da35516fb2a309f440bce67",
     "viewer/tests/url-state.test.mjs": "a8d2b0ed1a0246aab9a305eb08cb566b6c34805fc366697711556d7b52ad874c",
     "viewer/tests/view-tabs.test.mjs": "1077d164207c1f2447db1e3ca23f65669821271bcf94bc308cfbdbf58288f942",
-    "viewer/ui.mjs": "d22dddc1aedc1924418304eef4d10e70ac899b2e9c0d713ba02ff6e35ce42406",
+    "viewer/ui.mjs": "e23754c82b778fc1f41436a239a73bab8a1d1fa6cb3abfc9d3e65f7d763d8a14",
     "viewer/url-state.mjs": "dff50fc0a02aae2695e8f2b391e0542249a67e7c144433fa8a877108a8d48d24",
     "viewer/view-tabs.mjs": "67910091f77a553b8e3633f8c50be686f89f0302521a30ff0ddc00e8c4de7e9e"
   }
