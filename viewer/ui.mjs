@@ -298,3 +298,9 @@ export function resetDisplayControls(controls) {
   if(controls.prediction) controls.prediction.checked=true;
   controls.persistence.checked=true;
 }
+
+/** Resolve the origin against all saved observations, including outside the view. */
+export function originObservation(rows,row) {
+  const value=rows.find(item=>Date.parse(item.target_time)===Date.parse(row.origin_time))?.observed;
+  return Number.isFinite(value)?value:null;
+}
