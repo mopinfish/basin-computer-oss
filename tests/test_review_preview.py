@@ -36,6 +36,8 @@ def test_preview_is_synthetic_valid_and_reproducible(tmp_path):
     assert "観測値：国土交通省" not in html
     assert "2023〜2024年の保存済み観測" not in html
     assert not (first / "data/manifest.json").exists()
+    for name in ["tokens.css", "button.css", "select.css", "LICENSE", "SOURCE.md"]:
+        assert (first / "vendor/dads" / name).read_bytes() == (ROOT / "viewer/vendor/dads" / name).read_bytes()
 
 
 def test_preview_never_overwrites_existing_or_real_viewer(tmp_path):

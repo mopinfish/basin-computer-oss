@@ -250,17 +250,16 @@ function inspect(index) {
   $('inspection-time').textContent=timestamp;
   $('origin-time').textContent=`${formatJST(row.origin_time)} JST`;
   $('target-time').textContent=timestamp;
-  $('lead-time').textContent=`${selected.result.horizon_h}時間`;
-  const list=node('dl');
+  $('lead-time').textContent=`${selected.result.horizon_h}時間後`;
+  $('origin-value').textContent=missingValue(originObservation(selected.rows,row));
+  const values=node('dl');
   for(const [label,value] of [
-    ['対象時刻の観測',`${missingValue(row.observed)} m³/s`],
-    ['開始時刻の観測',`${missingValue(originObservation(selected.rows,row))} m³/s`],
-    ['6時間先',prediction===null?'未生成 / 不採用':`${prediction.toFixed(3)} m³/s`],
-    ['持続予測',persistenceReference(row,comparison)],
-    ['雨量',`${missingValue(row.rain)} mm`],
-    ['予測開始時刻',`${formatJST(row.origin_time)} JST`],
-    ['予測先行時間',`${selected.result.horizon_h}時間`],
-    ['採否',reasonLabel(row.reason)]]) list.append(node('dt',label),node('dd',value));
+    ['観測',`${missingValue(row.observed)} m³/s`],
+    ['モデル予測',prediction===null?'未生成 / 不採用':`${prediction.toFixed(3)} m³/s`],
+    ['持続予測',persistenceReference(row,comparison)]]) values.append(node('dt',label),node('dd',value));
+  $('forecast-values').replaceChildren(...values.childNodes);
+  const list=node('dl');
+  for(const [label,value] of [['対象時刻の雨量',`${missingValue(row.rain)} mm`],['採否',reasonLabel(row.reason)]]) list.append(node('dt',label),node('dd',value));
   for(const item of extraSeries.filter(item=>selectedSeries.has(item.key))) list.append(node('dt',item.label),node('dd',seriesReference(item,row)));
   $('inspection-values').replaceChildren(list);
   const chart=$('q-chart');
@@ -271,22 +270,8 @@ function inspect(index) {
   const outside=origin<first||origin>last;
   const originX=65+(origin-first)/Math.max(last-first,1)*835;
   const guide=svgNode('g',{class:'forecast-correspondence','pointer-events':'none'});
-  const startX=outside?(origin<first?65:900):originX;
   if(!outside) guide.append(svgNode('line',{x1:originX,x2:originX,y1:14,y2:170,stroke:'#87531c','stroke-dasharray':'6 3'}));
-  guide.append(svgNode('line',{x1:startX,x2:targetX,y1:24,y2:24,stroke:'#87531c','stroke-width':2}));
-  const arrowSize=Math.min(6,Math.max(0,targetX-startX));
-  guide.append(svgNode('path',{d:`M ${targetX-arrowSize} ${24-arrowSize/2} L ${targetX} 24 L ${targetX-arrowSize} ${24+arrowSize/2}`,fill:'none',stroke:'#87531c','stroke-width':2}));
-  if(!outside&&targetX-originX>=65) guide.append(svgNode('text',{x:originX,y:12,fill:'#754313','font-size':13},'開始'));
-  guide.append(svgNode('text',{x:Math.min(865,targetX+4),y:58,fill:'#254f70','font-size':13},'対象'));
-  guide.append(svgNode('title',{},`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}${outside?'（開始時刻は表示範囲外）':''}`));
-  let proximityNote=$('forecast-proximity-note');
-  if(!proximityNote) {
-    proximityNote=node('p','開始と対象が近接しています。日時を指定すると拡大できます。','chart-note');
-    proximityNote.id='forecast-proximity-note';
-    chart.parentElement.after(proximityNote);
-  }
-  proximityNote.hidden=false;
-  proximityNote.textContent=`予測開始 ${formatJST(row.origin_time)} JST → 対象 ${timestamp}（${selected.result.horizon_h}時間後）${outside?'。開始時刻は表示範囲外です。':targetX-originX<65?'。開始と対象が近接しています。日時指定で拡大できます。':''}`;
+  $('origin-outside').hidden=!outside;
   chart.append(guide);
   const position=65+index/Math.max(displayed.length-1,1)*835;
   for(const cursor of document.querySelectorAll('.inspection-cursor')) {cursor.setAttribute('x1',position);cursor.setAttribute('x2',position);}
@@ -335,14 +320,11 @@ function render() {
     $('persistence-score').textContent=`NSE ${metricLabel(baseline.nse,baseline.nse_reason)} / 同一採用 ${baseline.n_samples.toLocaleString('ja-JP')}時刻`;
     const reading=resultReadingState(bundle.results,result);
     $('comparison-finding').textContent=reading.finding;
-    $('intro-context').textContent=reading.synthetic?'表示確認用の合成データです。値・流域形状・観測点は人工で、予測性能の評価には使えません。':'既存デモの保存結果です。過去の観測と予測を確認する画面で、リアルタイム予測ではありません。';
-    $('target-summary').textContent=`対象：${basin.properties.name} / 流量（m³/s）/ 先行時間 ${result.horizon_h}時間 / 保存間隔 1時間。評価期間：${period(result.period_start,result.period_end)}（終了時刻を含まない）。`;
-    $('reading-status').textContent=reading.synthetic?'値・形状・観測点は合成です。表示確認用であり、研究成果や実際の予測性能を示しません。':'過去に保存した結果です。研究系列の採用確認や一般公開の判断とは別に扱います。';
-    $('chart-conditions').textContent=`予測対象時刻の${result.horizon_h}時間前が予測開始時刻です。1時間間隔の保存値を表示します。これは情報の更新頻度を表しません。`;
-    $('evaluation-scope').textContent=`全評価期間：${period(result.period_start,result.period_end)}（終了時刻を含まない）。予測と持続予測を同じ採用 ${result.n_samples.toLocaleString('ja-JP')}時刻で比較します。図の表示範囲や系列を変えても指標は変わりません。`;
+    $('intro-context').textContent=reading.synthetic?'合成データ｜保存結果（人工値）':'実観測データ｜保存結果';
+    $('evaluation-heading').textContent=`${basin.properties.name}の全評価期間`;
+    $('evaluation-scope').textContent=`全評価期間：${period(result.period_start,result.period_end)}（終了時刻を含まない）。採用 ${result.n_samples.toLocaleString('ja-JP')}時刻（表示期間による再集計なし）。`;
     $('evaluation-status').textContent=reading.synthetic?'以下の数値も合成データの検査値です。性能評価には使えません。':'';
     $('evaluation-status').hidden=!reading.synthetic;
-    $('interpretation-status').textContent=reading.synthetic?'この画面から確認できるのは表示と操作の動作です。合成データから予測の実用性や防災上の効果は判断できません。':'この結果の解釈は、ここに示す流域、期間、先行時間、採用時刻に限定します。';
     $('event-note').hidden=view.event===null;
     if(view.event) $('event-note').textContent=view.event.reason?'観測最大を選べないため評価期間全体を表示します。':`評価期間の観測${$('period-select').value==='peak-rain'?'雨量':'流量'}最大：${formatJST(new Date(view.event.peakTime).toISOString())} JST / ${view.event.peakValue} ${$('period-select').value==='peak-rain'?'mm':'m³/s'}。前後84時間の閲覧です（境界では短くなります）。指標は全評価期間のままです。`;
 

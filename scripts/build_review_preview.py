@@ -33,6 +33,10 @@ def build_preview(output: Path) -> None:
     for path in (ROOT / "viewer").iterdir():
         if path.is_file() and path.suffix in {".html", ".css", ".mjs"}:
             shutil.copyfile(path, output / path.name)
+    vendor = output / "vendor/dads"
+    vendor.mkdir(parents=True)
+    for name in ["tokens.css", "button.css", "select.css", "LICENSE", "SOURCE.md"]:
+        shutil.copyfile(ROOT / "viewer/vendor/dads" / name, vendor / name)
     app_path = output / "app.mjs"
     app_path.write_text(app_path.read_text(encoding="utf-8").replace("生成日時", "合成データの基準日時"), encoding="utf-8")
     html_path = output / "index.html"
