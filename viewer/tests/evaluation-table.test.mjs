@@ -38,3 +38,11 @@ test('includes source path, names, package versions and per-result synthetic ide
  Object.assign(b.results.results[0],{prediction_path:'predictions/saved.csv',extensions:{synthetic:true}});
  const out=buildEvaluationTable(b);assert.equal(out.schemaVersion,'0.3');assert.equal(out.libraryVersion,'0.1.0a2');assert.equal(out.dataLibraryVersion,'0.1.0a2');assert.equal(out.basins[0].basinName,'合成流域B');assert.equal(out.basins[0].synthetic,true);assert.equal(out.basins[0].predictionPath,'predictions/saved.csv');
 });
+test('mixed prediction provenance is copied without assigning bundle identity to groups',()=>{
+ const b=fixture();b.results.extensions={provenance_groups:[{basin_ids:['synthetic-b'],kind:'preserved',generated_at:'2024-01-01T00:00:00Z',implementation:{source_commit:'original'},dataset_version:'old',source_results_sha256:'source-hash'}]};
+ const out=buildEvaluationTable(b);
+ assert.deepEqual(out.provenanceGroups,b.results.extensions.provenance_groups);
+ out.provenanceGroups[0].implementation.source_commit='changed';
+ assert.equal(b.results.extensions.provenance_groups[0].implementation.source_commit,'original');
+ assert.deepEqual(buildEvaluationTable(fixture()).provenanceGroups,[]);
+});

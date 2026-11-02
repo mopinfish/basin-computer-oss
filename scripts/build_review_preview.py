@@ -42,7 +42,7 @@ def build_preview(output: Path) -> None:
     for name in ["maplibre-gl.mjs", "maplibre-gl-shared.mjs", "maplibre-gl-worker.mjs", "maplibre-gl.css", "LICENSE.txt", "SOURCE.md"]:
         shutil.copyfile(ROOT / "viewer/vendor/maplibre" / name, map_vendor / name)
     map_page = output / "maps.html"
-    map_page.write_text(map_page.read_text().replace("非公開アルファ版", "合成データで動作確認").replace('data-map-background="gsi"', 'data-map-background="none"'))
+    map_page.write_text(map_page.read_text().replace("非公開アルファ版", "合成データで動作確認").replace('data-map-background="gsi"', 'data-map-background="none"').replace('data-map-background="osm"', 'data-map-background="none"'))
     app_path = output / "app.mjs"
     app_path.write_text(app_path.read_text(encoding="utf-8").replace("生成日時", "合成データの基準日時"), encoding="utf-8")
     html_path = output / "index.html"

@@ -22,7 +22,9 @@ export function mapCatalog(bundle) {
     const station=bundle.stations.features.find(item=>item.properties.basin_id===result.basin_id&&item.properties.role==='streamflow');
     if(!basin||!station) throw new Error('流域の位置情報が見つかりません');
     return {id:result.basin_id,name:basin.properties.name,area:basin.properties.area_km2,coordinates:station.geometry.coordinates,
-      start:result.period_start,end:result.period_end,horizon:result.horizon_h};
+      start:result.period_start,end:result.period_end,horizon:result.horizon_h,
+      comparison:bundle.results.extensions?.synthetic===true||result.extensions?.synthetic===true?null:
+        {modelRmse:result.rmse,persistenceRmse:result.baselines.persistence.rmse}};
   });
 }
 export function mapReturnHref(bundle,scene='') {
@@ -30,11 +32,25 @@ export function mapReturnHref(bundle,scene='') {
   const resolved=resolveScene(scene,bundle);
   return !resolved.fallback&&!resolved.warnings.length?'./'+scene:'./';
 }
+const BACKGROUND_KEY='basin-computer.real-map-background.v1';
+export function readMapBackground() {
+  try {const value=globalThis.localStorage.getItem(BACKGROUND_KEY);return ['osm','gsi'].includes(value)?value:'osm';}
+  catch {return 'osm';}
+}
+export function saveMapBackground(value) {
+  if(!['osm','gsi'].includes(value))return;
+  try {globalThis.localStorage.setItem(BACKGROUND_KEY,value);}catch {/* Storage may be unavailable. */}
+}
 export function mapStyle(synthetic,background='none') {
   const style={version:8,sources:{},layers:[{id:'canvas',type:'background',paint:{'background-color':'#edf2f2'}}]};
-  if(!synthetic&&background==='gsi') {
-    style.sources.background={type:'raster',tiles:['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],tileSize:256,minzoom:2,maxzoom:18,
-      attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>'};
+  if(!synthetic&&['osm','gsi'].includes(background)) {
+    style.sources.background=background==='osm'?{
+      type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,minzoom:0,maxzoom:19,
+      attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    }:{
+      type:'raster',tiles:['https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png'],tileSize:256,minzoom:5,maxzoom:14,
+      attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>',
+    };
     style.layers.push({id:'background',type:'raster',source:'background'});
   }
   return style;

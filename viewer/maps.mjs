@@ -2,33 +2,51 @@ import {loadBundle} from './contract.mjs';
 import {formatJST,requireSixHourDemo} from './ui.mjs';
 import {resolveScene} from './url-state.mjs';
 import {syncReferenceLinks} from './reference-pages.mjs';
-import {mapRequest,mapCatalog,basinDetailHref,mapStyle,mapReturnHref} from './map-catalog.mjs';
+import {mapRequest,mapCatalog,basinDetailHref,mapStyle,mapReturnHref,readMapBackground,saveMapBackground} from './map-catalog.mjs';
 const $=id=>document.getElementById(id);
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
 const bundle=await loadBundle('data/');
 requireSixHourDemo(bundle);
 const items=mapCatalog(bundle),request=mapRequest(location.search);
 const synthetic=bundle.results.extensions?.synthetic===true;
+const backgroundAllowed=!synthetic&&['gsi','osm'].includes(document.body.dataset.mapBackground);
+let background=backgroundAllowed?readMapBackground():'none';
+$('map-background-control').hidden=!backgroundAllowed;
+$('map-background').value=backgroundAllowed?background:'osm';
 $('map-return-link').textContent=mapReturnHref(bundle,request.scene)!=='./'?'元の時系列へ戻る':'時系列を開く';
-$('map-data-kind').textContent=synthetic?'人工配置の合成流域｜表示確認用':'実観測データ｜保存結果';
+$('map-data-kind').textContent=synthetic?'人工配置の合成流域｜表示確認用':'実観測データ｜6時間先予測の保存結果';
 const priorScene=request.scene?resolveScene(request.scene,bundle):null;
 if(priorScene?.warnings.length)request.warning=priorScene.warnings.map(item=>item.message).join(' ');
 let selected=request.basin||priorScene?.state.basin||'';
 if(selected&&!items.some(item=>item.id===selected)){selected='';request.warning='指定された流域が見つからないため、一覧を表示します。';}
 if(request.warning){$('map-warning').textContent=request.warning;$('map-warning').hidden=false;}
 let map,gl,popup,geometryReady=false;
+// Close the old popup before a map or list handler opens another one.
+document.addEventListener('click',event=>{
+  if(popup?.isOpen()&&!event.target.closest('.maplibregl-popup'))popup.remove();
+},true);
 const buttons=new Map();
 document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&popup?.isOpen()){
     event.preventDefault();popup.remove();buttons.get(selected)?.focus({preventScroll:true});
   }
 });
-function detail(item) {
+function detail(item,{asPopup=false}={}) {
   const section=node('div');section.className='map-popup';section.append(node('h3',item.name));
   const dl=node('dl');
-  for(const [label,value] of [['面積',`${item.area} km²`],['評価期間',`${formatJST(item.start)} 〜 ${formatJST(item.end)} JST（終了を含まない）`],['保存結果',`${item.horizon}時間先予測`]])dl.append(node('dt',label),node('dd',value));
+  const facts=[['面積',`${item.area} km²`]];
+  if(!asPopup)facts.push(['評価期間',`${formatJST(item.start)} 〜 ${formatJST(item.end)} JST（終了を含まない）`]);
+  for(const [label,value] of facts)dl.append(node('dt',label),node('dd',value));
+  section.append(dl);
+  if(asPopup&&item.comparison){
+    const comparison=node('section');comparison.className='popup-comparison';
+    comparison.append(node('h4','全評価期間の誤差（RMSE）'));
+    const values=node('dl'),format=new Intl.NumberFormat('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2});
+    for(const [label,value] of [['モデル予測',item.comparison.modelRmse],['持続予測',item.comparison.persistenceRmse]])values.append(node('dt',label),node('dd',`${format.format(value)} m³/s`));
+    comparison.append(values);section.append(comparison);
+  }
   const link=node('a','この流域の時系列を見る');link.href=basinDetailHref(bundle,item.id,request.scene);
-  section.append(dl,link);return section;
+  section.append(link);return section;
 }
 function syncLinks(id) {
   const href=basinDetailHref(bundle,id||items[0].id,request.scene);
@@ -40,7 +58,7 @@ function showPopup(item) {
   popup?.remove();
   map.setFilter('basin-fill',['!=',['get','basin_id'],item.id]);
   for(const layer of ['selected-fill','selected-halo','selected-basin'])map.setFilter(layer,['==',['get','basin_id'],item.id]);
-  popup=new gl.Popup({closeOnClick:false,focusAfterOpen:false,maxWidth:'300px'}).setLngLat(item.coordinates).setDOMContent(detail(item)).addTo(map);
+  popup=new gl.Popup({closeOnClick:false,focusAfterOpen:false,maxWidth:'300px'}).setLngLat(item.coordinates).setDOMContent(detail(item,{asPopup:true})).addTo(map);
   popup.on('close',()=>{if(document.activeElement===document.body)buttons.get(item.id)?.focus({preventScroll:true});});
   const coordinates=bundle.basins.features.find(f=>f.properties.basin_id===item.id).geometry.coordinates.flat(Infinity);
   // fit the selected catchment without inferring a representative point from its bounding box.
@@ -64,12 +82,32 @@ for(const item of items){
 $('map-load-status').hidden=true;
 syncLinks(selected);
 if(selected)select(selected,{record:false});
+const coverageHint='白地図を見るには、流域を選ぶか地図を拡大してください。';
+function updateBackgroundCoverage() {
+  const status=$('map-render-status');
+  if(background==='gsi'&&map.getZoom()<5)status.textContent=coverageHint;
+  else if(status.textContent===coverageHint)status.textContent='';
+}
+$('map-background').addEventListener('change',()=>{
+  if(!backgroundAllowed||!geometryReady)return;
+  const choice=$('map-background').value;
+  const source=mapStyle(false,choice).sources.background;
+  if(!source||choice===background)return;
+  if(map.getLayer('background'))map.removeLayer('background');
+  if(map.getSource('background'))map.removeSource('background');
+  map.addSource('background',source);
+  map.addLayer({id:'background',type:'raster',source:'background'},'basin-fill');
+  background=choice;saveMapBackground(choice);
+  $('map-render-status').textContent='';
+  updateBackgroundCoverage();
+});
 try {
   gl=await import('./vendor/maplibre/maplibre-gl.mjs');
   gl.setWorkerCount(1);
   gl.setWorkerUrl(new URL('./vendor/maplibre/maplibre-gl-worker.mjs',import.meta.url).href);
-  map=new gl.Map({container:'basin-map',style:mapStyle(synthetic,document.body.dataset.mapBackground),center:items[0].coordinates,zoom:6,attributionControl:true,locale:{'NavigationControl.ZoomIn':'拡大','NavigationControl.ZoomOut':'縮小','Popup.Close':'閉じる','Map.Title':'流域地図'}});
+  map=new gl.Map({container:'basin-map',style:mapStyle(synthetic,background),center:items[0].coordinates,zoom:6,attributionControl:{compact:false},locale:{'NavigationControl.ZoomIn':'拡大','NavigationControl.ZoomOut':'縮小','Popup.Close':'閉じる','Map.Title':'流域地図'}});
   map.addControl(new gl.NavigationControl({showCompass:false}),'top-right');
+  map.on('zoomend',updateBackgroundCoverage);
   map.on('error',event=>{
     if(event.sourceId==='background')$('map-render-status').textContent='背景地図を読み込めません。流域は表示できます。';
     else $('map-render-status').textContent='地図の一部を表示できません。一覧からも選択できます。';
@@ -88,6 +126,7 @@ try {
       map.on('mouseleave',layer,()=>{map.getCanvas().style.cursor='';});
     }
     geometryReady=true;
+    $('map-background').disabled=!backgroundAllowed;
     const bounds=new gl.LngLatBounds();for(const feature of bundle.basins.features){const coordinates=feature.geometry.coordinates.flat(Infinity);for(let i=0;i<coordinates.length;i+=2)bounds.extend([coordinates[i],coordinates[i+1]]);}map.fitBounds(bounds,{padding:70,maxZoom:9,duration:0});
     if(selected)showPopup(items.find(item=>item.id===selected));
     if($('map-render-status').textContent==='地図を準備しています…')$('map-render-status').textContent=synthetic?'背景なしの人工配置です。':'';

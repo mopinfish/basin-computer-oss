@@ -40,6 +40,7 @@ export function buildEvaluationTable(bundle) {
     dataLibraryVersion: root.data_library_version,
     synthetic,
     implementation: structuredClone(root.implementation ?? null),
+    provenanceGroups: structuredClone(root.extensions?.provenance_groups ?? []),
     publicReleaseBlockers: structuredClone(root.public_release_blockers ?? []),
     basins,
   };
