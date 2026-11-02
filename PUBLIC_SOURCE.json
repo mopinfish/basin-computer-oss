@@ -1,5 +1,5 @@
 {
-  "source_commit": "b80e8b690068f86f8d9e771e0cd75e8ce34af62d",
+  "source_commit": "f8e966a544b7b3284ebdcd42a10db3e5725fb061",
   "source_dirty": false,
   "scope": "basin-rc and synthetic viewer only; no source observations or Git history",
   "files": {
@@ -47,7 +47,7 @@
     "viewer/evaluation-policy.html": "72bcfdb943c6bea457da6cebcc18a2f210aef81a0fb79843c897530ab37ae5b7",
     "viewer/evaluation-table-dom.mjs": "d8bf9c63b55da326c82a5e363f8bff64cffcc072849377ecb63d272f4d417c2a",
     "viewer/evaluation-table.mjs": "8954c7ef5b2e143aee488d6a98b7ee9af058c4b08d4275d138149abee755cd05",
-    "viewer/faq.html": "afc4f7c3940795433104923f8ae10dc959514f5a78f552494de400ef1c5475ac",
+    "viewer/faq.html": "4df12574b0aa4cc3ce825a1f3fda967607061e682d3d830f56dd04a427688da3",
     "viewer/index.html": "e5dda92994e30cf0c8583a43d6165e6623993becdab76e10ab61cc87793a1b85",
     "viewer/overview.css": "84230efe5c56bd32c024ac7c54df698af4a77a203a4fc86d7f01c4d5f6319d91",
     "viewer/overview.mjs": "70a0e0ad108bc5e576245b42de6100f4e8f35885123870e70cfbe7e457633e53",
