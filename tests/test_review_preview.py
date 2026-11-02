@@ -25,6 +25,15 @@ def test_preview_is_synthetic_valid_and_reproducible(tmp_path):
     assert data["implementation"]["source_commit"] is None
     assert "合成データの基準日時" in (first / "app.mjs").read_text()
     assert data["artifact_sha256"] == json.loads((second / "data/results.json").read_text())["artifact_sha256"]
+    geometries = json.loads((first / "data/basins.geojson").read_text())["features"]
+    boxes = []
+    for feature in geometries:
+        points = feature["geometry"]["coordinates"][0]
+        boxes.append((min(p[0] for p in points), max(p[0] for p in points), min(p[1] for p in points), max(p[1] for p in points)))
+    for i, box in enumerate(boxes):
+        for other in boxes[i + 1:]:
+            assert box[1] < other[0] or other[1] < box[0] or box[3] < other[2] or other[3] < box[2]
+    assert 'data-map-background="none"' in (first / "maps.html").read_text()
     for result in data["results"]:
         assert result["horizon_h"] == 6
         assert result["n_samples"] == 234
@@ -36,6 +45,9 @@ def test_preview_is_synthetic_valid_and_reproducible(tmp_path):
     assert "観測値：国土交通省" not in html
     assert "2023〜2024年の保存済み観測" not in html
     assert not (first / "data/manifest.json").exists()
+    for name in ["LICENSE.txt", "SOURCE.md", "maplibre-gl.mjs", "maplibre-gl-shared.mjs", "maplibre-gl-worker.mjs", "maplibre-gl.css"]:
+        assert (first / "vendor/maplibre" / name).read_bytes() == (ROOT / "viewer/vendor/maplibre" / name).read_bytes()
+    assert "合成データで動作確認" in (first / "maps.html").read_text()
     for name in ["tokens.css", "button.css", "select.css", "LICENSE", "SOURCE.md"]:
         assert (first / "vendor/dads" / name).read_bytes() == (ROOT / "viewer/vendor/dads" / name).read_bytes()
 

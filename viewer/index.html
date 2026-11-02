@@ -4,18 +4,18 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>流域と6時間先予測 | basin-computer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23087f8c' d='M16 2C10 12 4 17 4 23a12 12 0 0024 0C28 17 22 12 16 2z'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20261102-chrome">
   <link rel="stylesheet" href="overview.css">
 <link rel="stylesheet" href="vendor/dads/tokens.css">
 <link rel="stylesheet" href="vendor/dads/button.css">
 <link rel="stylesheet" href="vendor/dads/select.css">
-<script type="module" src="app.mjs"></script>
+<script type="module" src="site-chrome.mjs"></script><script type="module" src="bootstrap.mjs"></script>
 </head>
-<body>
+<body data-site-edition="合成データで動作確認">
 <a class="skip-link" href="#main-content">本文へ移動</a>
-<header class="topbar"><a class="brand" href="./">basin<span>computer</span></a><span class="tag">合成データで動作確認</span></header>
+<div data-site-chrome="header"></div>
 <main id="main-content" tabindex="-1">
-<div class="intro"><p class="eyebrow">集水域から時系列へ</p><h1>流域と6時間先予測</h1><p id="intro-context">流域の保存結果から、予測の適用条件と追加検証の必要性を確認します。リアルタイム予測ではありません。</p></div>
+
 <p id="load-status" role="status" aria-live="polite">データと結果を読み込んでいます…</p>
 <div id="error" class="error" role="alert" hidden></div>
 <script>
@@ -27,7 +27,7 @@ if (location.protocol === 'file:') {
 }
 </script>
 <div id="content" hidden>
-<section class="controls" aria-label="表示の選択"><label for="basin-select">流域<span class="dads-select"><span class="dads-select__control"><select id="basin-select" class="dads-select__select" data-size="md"></select><svg class="dads-select__chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17L3 8L4 7L12 15L20 7L21 8L12 17Z" fill="currentcolor"/></svg></span></span></label><nav aria-label="デモの補足"><a href="quality.html" data-reference-page="quality.html">品質と検証範囲</a>　<a href="faq.html" data-reference-page="faq.html" target="_blank" rel="noopener">使い方・FAQ（別タブ）</a></nav></section><p id="url-notice" class="url-notice" role="status" hidden></p><p id="display-feedback" class="display-feedback" role="status" aria-live="polite"></p>
+<div class="context-row"><div class="intro"><p class="eyebrow">集水域から時系列へ</p><h1>流域と6時間先予測</h1><p id="intro-context">流域の保存結果から、予測の適用条件と追加検証の必要性を確認します。リアルタイム予測ではありません。</p></div><section class="controls context-controls" aria-label="表示の選択"><label for="basin-select">流域<span class="dads-select"><span class="dads-select__control"><select id="basin-select" class="dads-select__select" data-size="md"></select><svg class="dads-select__chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17L3 8L4 7L12 15L20 7L21 8L12 17Z" fill="currentcolor"/></svg></span></span></label></section></div><p id="url-notice" class="url-notice" role="status" hidden></p><p id="display-feedback" class="display-feedback" role="status" aria-live="polite"></p>
 <div class="view-tabs" role="tablist" aria-label="保存結果の表示"><button type="button" id="timeseries-tab" role="tab" aria-selected="true" aria-controls="timeseries-panel" tabindex="0">時系列</button><button type="button" id="evaluation-tab" role="tab" aria-selected="false" aria-controls="evaluation-panel" tabindex="-1">評価一覧（3流域）</button></div>
 <section id="timeseries-panel" role="tabpanel" aria-labelledby="timeseries-tab"><div class="controls timeseries-controls" aria-label="時系列の表示"><div class="period-control"><span id="period-label">表示期間</span><select id="period-select" hidden aria-hidden="true" tabindex="-1"><option value="all">評価期間全体</option><option value="range" disabled>日時を指定した期間</option><option value="7">末尾7日</option><option value="30">末尾30日</option><option value="peak-rain">雨量最大の周辺7日</option><option value="peak-q">流量最大の周辺7日</option></select><details id="period-menu" class="period-menu"><summary aria-labelledby="period-label period-current"><span id="period-current"></span></summary><div id="period-options" class="period-options" role="group" aria-label="表示期間の選択肢"></div></details></div><details id="range-details" class="range-picker"><summary>日時を指定</summary><form id="range-form" class="range-controls" novalidate aria-label="開始・終了日時を指定">
 <label for="range-start">開始（JST）<input id="range-start" name="start" autocomplete="off" type="datetime-local" step="3600" required aria-describedby="range-help range-error"></label>
@@ -53,8 +53,8 @@ if (location.protocol === 'file:') {
 <section id="evaluation-panel" role="tabpanel" aria-labelledby="evaluation-tab" hidden><section class="panel evaluation-section" aria-labelledby="evaluation-heading"><h2 id="evaluation-heading">保存結果の評価</h2><p id="evaluation-scope" class="muted"></p><p id="evaluation-status" class="reading-status"></p><section class="metrics" aria-label="評価期間全体の指標"><div class="metric"><span>6時間先予測 NSE</span><strong id="nse"></strong></div><div class="metric"><span>6時間先予測 RMSE <small>m³/s</small></span><strong id="rmse"></strong></div><div class="metric"><span>評価に採用した時刻数</span><strong id="samples"></strong><small id="exclusions"></small></div><div class="metric persistence-metric"><span>持続予測 RMSE <small>m³/s</small></span><strong id="persistence-rmse"></strong><small id="persistence-score"></small></div></section>
 <p id="comparison-finding" class="comparison-finding"></p></section>
 <div id="evaluation-content"></div></section>
-<details class="panel provenance-details"><summary>出典・版・未確認事項</summary><section class="provenance"><div><h2>候補データと利用条件</h2><p id="candidate-status"></p><ul id="blockers"></ul></div><div><dl id="versions"></dl><p>値・形状・地点はすべて人工データです。実観測データは含みません。</p><ul id="source-links"></ul><p id="source-dates"></p><p id="rain-method"></p><p>この動作確認は予測性能やリアルタイム性能を保証しません。</p></div></section></details>
+<details id="data-provenance" class="panel provenance-details"><summary>出典・版・未確認事項</summary><section class="provenance"><div><h2>候補データと利用条件</h2><p id="candidate-status"></p><ul id="blockers"></ul></div><div><dl id="versions"></dl><p>値・形状・地点はすべて人工データです。実観測データは含みません。</p><ul id="source-links"></ul><p id="source-dates"></p><p id="rain-method"></p><p>この動作確認は予測性能やリアルタイム性能を保証しません。</p></div></section></details>
 </div>
 </main>
-<footer>basin-computer · 保存済み結果のローカル表示</footer>
+<div data-site-chrome="footer"></div>
 </body></html>

@@ -37,6 +37,12 @@ def build_preview(output: Path) -> None:
     vendor.mkdir(parents=True)
     for name in ["tokens.css", "button.css", "select.css", "LICENSE", "SOURCE.md"]:
         shutil.copyfile(ROOT / "viewer/vendor/dads" / name, vendor / name)
+    map_vendor = output / "vendor/maplibre"
+    map_vendor.mkdir(parents=True)
+    for name in ["maplibre-gl.mjs", "maplibre-gl-shared.mjs", "maplibre-gl-worker.mjs", "maplibre-gl.css", "LICENSE.txt", "SOURCE.md"]:
+        shutil.copyfile(ROOT / "viewer/vendor/maplibre" / name, map_vendor / name)
+    map_page = output / "maps.html"
+    map_page.write_text(map_page.read_text().replace("非公開アルファ版", "合成データで動作確認").replace('data-map-background="gsi"', 'data-map-background="none"'))
     app_path = output / "app.mjs"
     app_path.write_text(app_path.read_text(encoding="utf-8").replace("生成日時", "合成データの基準日時"), encoding="utf-8")
     html_path = output / "index.html"
@@ -97,10 +103,14 @@ def build_preview(output: Path) -> None:
                 writer.writerow({key: "True" if value is True else "False" if value is False else "" if value is None else value for key, value in row.items()})
         basin = copy.deepcopy(template["basins"]["features"][0])
         basin["properties"].update(basin_id=basin_id, source_id=basin_id, name=f"{name}（形状は合成）")
+        # Artificial coordinates are separated and independent of real basin locations.
+        x, y = number * 0.12, (number % 2) * 0.08
+        basin["geometry"] = {"type": "Polygon", "coordinates": [[[x, y], [x + 0.04, y], [x + 0.04, y + 0.04], [x, y]]]}
         basins["features"].append(basin)
         for role in ("streamflow", "rain"):
             station = copy.deepcopy(template["stations"]["features"][0])
             station["properties"].update(basin_id=basin_id, station_id=basin_id if role == "streamflow" else f"{basin_id}-rain", name="動作確認用の流量観測点" if role == "streamflow" else "動作確認用の雨量観測点", role=role, source_url="https://example.invalid/synthetic")
+            station["geometry"] = {"type": "Point", "coordinates": [x, y] if role == "streamflow" else [x + 0.02, y + 0.01]}
             stations["features"].append(station)
     write_json(data / "basins.geojson", basins)
     write_json(data / "stations.geojson", stations)

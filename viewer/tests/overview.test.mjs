@@ -14,14 +14,14 @@ import {createOverview} from '../overview.mjs';
 function overviewDocument() {
   const nodes=[];
   function element(tag){const e={tag,children:[],attributes:{},handlers:{},textContent:'',append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;},addEventListener(name,fn){this.handlers[name]=fn;},setAttribute(name,value){this.attributes[name]=String(value);},querySelector(selector){return descendants(this).find(n=>selector==='button'?n.tag==='button':n.tag==='option'&&n.value==='center')??null;},remove(){for(const parent of nodes)parent.children=parent.children.filter(child=>child!==this);}};nodes.push(e);return e;}
-  const select=element('select'),flow=element('section');flow.before=e=>{flow.overview=e;};
+  const select=element('select'),flow=element('section');flow.after=e=>{flow.overview=e;flow.overviewPlacement='after';};
   return {nodes,select,flow,createElement:element,createElementNS:(_,tag)=>element(tag),querySelector:()=>flow,getElementById:()=>select};
 }
 const descendants=node=>[node,...node.children.flatMap(descendants)];
 test('runtime native details starts collapsed, keyboard confirms candidate and restoration preserves center',()=>{
   const doc=overviewDocument(),confirmed=[],overview=createOverview(doc,time=>confirmed.push(time));
   overview.sync(rows,result,rows);
-  assert.equal(doc.flow.overview.tag,'details');assert.equal(doc.flow.overview.open,undefined);
+  assert.equal(doc.flow.overviewPlacement,'after');assert.equal(doc.flow.overview.tag,'details');assert.equal(doc.flow.overview.open,undefined);
   assert.equal(doc.flow.overview.attributes['aria-label'],undefined);
   assert.equal(descendants(doc.flow.overview).find(n=>n.tag==='strong').textContent,'全評価期間の観測流量');
   const slider=doc.nodes.find(n=>n.tag==='input');slider.value='200';slider.handlers.input();

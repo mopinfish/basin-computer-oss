@@ -7,7 +7,7 @@ import {createSceneHistory} from './scene-history.mjs';
 import {buildEvaluationTable} from './evaluation-table.mjs';
 import {evaluationTableDOM,updateEvaluationSelection} from './evaluation-table-dom.mjs';
 import {bindViewTabs,restoreRemovedPanelFocus} from './view-tabs.mjs';
-import {originObservation,formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
+import {flowAxisBounds,originObservation,formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
 
 const $=id=>document.getElementById(id);
 let periodMenu;
@@ -198,8 +198,7 @@ function drawCharts(rows) {
   const flowState=flowChartState(visibleFlowSeries);
   $('flow-empty').hidden=flowState.showYAxis;
   q.setAttribute('aria-label',flowState.ariaLabel);
-  const values=rows.flatMap(row=>visibleFlowSeries.map(item=>item.valueOf(row))).filter(Number.isFinite);
-  const {min,max}=valueBounds(values);
+  const {min,max}=flowAxisBounds(rows,persistence,extraSeries);
   const chart=axes(q,rows,235,min,max,flowState);
   const purged=rows.filter(row=>row.reason==='origin_before_cutoff');
   if(purged.length>0) {
@@ -215,7 +214,8 @@ function drawCharts(rows) {
     const scroll=node('div',null,'chart-scroll');scroll.tabIndex=0;
     scroll.setAttribute('role','region');scroll.setAttribute('aria-label',`追加系列 ${group.unit}。目的時刻は共通のスライダーで選択できます`);
     const svg=svgNode('svg',{viewBox:'0 0 920 235',role:'img','aria-label':`${group.series.map(item=>item.label).join(' / ')} (${group.unit})`});
-    const values=rows.flatMap(row=>group.series.map(item=>item.valueOf(row))).filter(Number.isFinite);
+    const domainSeries=extraSeries.filter(item=>item.unit===group.unit);
+    const values=rows.flatMap(row=>domainSeries.map(item=>item.valueOf(row))).filter(Number.isFinite);
     const bounds=valueBounds(values);
     const chart=axes(svg,rows,235,bounds.min,bounds.max);
     drawSavedLines(svg,rows,group.series,chart);scroll.append(svg);section.append(scroll);
