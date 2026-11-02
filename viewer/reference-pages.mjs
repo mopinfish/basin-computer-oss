@@ -1,3 +1,4 @@
+import './site-chrome.mjs';
 import {parseScene} from './url-state.mjs';
 
 /** Carry a query only, never a user-controlled destination. Bundle checks stay in the viewer. */
@@ -13,7 +14,7 @@ export function viewerReturnHref(search) {
 }
 
 export function referencePageHref(page, sceneSearch) {
-  if (!['faq.html', 'quality.html', 'evaluation-policy.html'].includes(page)) return './';
+  if (!['faq.html', 'quality.html', 'evaluation-policy.html', 'maps.html'].includes(page)) return './';
   const scene = validSceneSearch(sceneSearch);
   return scene ? `${page}?${new URLSearchParams({scene})}` : page;
 }
@@ -30,6 +31,6 @@ export function setupReferencePage(root, search) {
   syncReferenceLinks(root, href.slice(2));
 }
 
-if (typeof document !== 'undefined' && document.querySelector('[data-viewer-link]')) {
+if (typeof document !== 'undefined' && document.querySelector('[data-viewer-link]')&&!document.getElementById('q-chart')) {
   setupReferencePage(document, location.search);
 }

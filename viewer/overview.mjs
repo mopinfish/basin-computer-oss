@@ -29,7 +29,7 @@ export function createOverview(document,onConfirm) {
     const controls=el('div');controls.className='overview-controls';const label=el('label');label.htmlFor='overview-center';caption=el('span');range=el('input');range.id='overview-center';range.type='range';range.min=0;range.step=1;
     label.append(caption,range);const button=el('button','周辺7日を表示');button.type='button';controls.append(label,button);button.title='タッチは概観で候補を選んでこのボタンで確定。キーボードは中心候補スライダーで移動しEnterで確定。';
     status=el('p');status.className='overview-status';status.setAttribute('role','status');
-    content.append(hint,chart,ends,controls,status);section.append(title,content);document.querySelector('.flow-panel').before(section);
+    content.append(hint,chart,ends,controls,status);section.append(title,content);document.querySelector('.flow-panel').after(section);
     range.addEventListener('input',()=>{candidate=Number(range.value);candidateLabel();});range.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();confirm();}});button.addEventListener('click',confirm);
     chart.addEventListener('pointerup',event=>{if(range.disabled)return;const matrix=chart.getScreenCTM();if(!matrix)return;const point=chart.createSVGPoint();point.x=event.clientX;point.y=event.clientY;const fraction=Math.max(0,Math.min(1,point.matrixTransform(matrix.inverse()).x/900));candidate=nearestIndex(test,Date.parse(result.period_start)+fraction*(Date.parse(result.period_end)-Date.parse(result.period_start)));candidateLabel();if(event.pointerType==='mouse')confirm();});
   }

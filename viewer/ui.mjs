@@ -304,3 +304,9 @@ export function originObservation(rows,row) {
   const value=rows.find(item=>Date.parse(item.target_time)===Date.parse(row.origin_time))?.observed;
   return Number.isFinite(value)?value:null;
 }
+
+/** Visibility affects lines, never the flow scale for the current viewport. */
+export function flowAxisBounds(rows,persistence,extraSeries=[]) {
+  const series=[...chartSeries(persistence),...extraSeries.filter(item=>item.unit==='m³/s')];
+  return valueBounds(rows.flatMap(row=>series.map(item=>item.valueOf(row))));
+}

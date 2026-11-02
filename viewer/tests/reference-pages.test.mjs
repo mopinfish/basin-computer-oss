@@ -59,3 +59,9 @@ test('centered window query round trips through reference pages independently of
   assert.equal(viewerReturnHref(new URL(target,'https://local.test/demo/').search),`./${centered}`);
  }
 });
+
+test('map entry receives the same safe scene envelope as reference pages',()=>{
+ const target=referencePageHref('maps.html',scene);
+ assert.equal(new URL(target,'https://local.test/demo/').pathname,'/demo/maps.html');
+ assert.equal(viewerReturnHref(new URL(target,'https://local.test/demo/').search),'./'+scene);
+});
