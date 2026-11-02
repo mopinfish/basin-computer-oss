@@ -31,3 +31,42 @@ test('return target stays at the original scene independently of selection',()=>
  assert.deepEqual(mapStyle(false).sources,{});
  assert.deepEqual(mapStyle(true,'gsi').sources,{});
 });
+
+test('real basemaps have distinct official tiles and attribution; synthetic never requests them',()=>{
+ const osm=mapStyle(false,'osm'),gsi=mapStyle(false,'gsi');
+ assert.equal(osm.sources.background.tiles[0],'https://tile.openstreetmap.org/{z}/{x}/{y}.png');
+ assert.match(osm.sources.background.attribution,/OpenStreetMap.*contributors/);
+ assert.equal(gsi.sources.background.tiles[0],'https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png');
+ assert.match(gsi.sources.background.attribution,/地理院タイル/);
+ for(const choice of ['osm','gsi','none','invalid'])assert.deepEqual(mapStyle(true,choice).sources,{});
+ assert.deepEqual(mapStyle(false,'invalid').sources,{});
+});
+
+test('last real basemap is restored; missing, invalid and blocked storage use OSM',async()=>{
+ const module=await import('../map-catalog.mjs');
+ assert.equal(typeof module.readMapBackground,'function');
+ const original=Object.getOwnPropertyDescriptor(globalThis,'localStorage');const values=new Map();
+ try{
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value)}});
+  assert.equal(module.readMapBackground(),'osm');
+  module.saveMapBackground('gsi');assert.equal(module.readMapBackground(),'gsi');
+  module.saveMapBackground('osm');assert.equal(module.readMapBackground(),'osm');
+  module.saveMapBackground('untrusted');assert.equal(module.readMapBackground(),'osm');
+  for(const key of values.keys())values.set(key,'untrusted');assert.equal(module.readMapBackground(),'osm');
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw new Error('blocked storage')}});
+  assert.equal(module.readMapBackground(),'osm');assert.doesNotThrow(()=>module.saveMapBackground('gsi'));
+ }finally{if(original)Object.defineProperty(globalThis,'localStorage',original);else delete globalThis.localStorage;}
+});
+
+test('popup comparison uses the two saved RMSE values and never creates a ranking',()=>{
+ const item=mapCatalog(bundle)[0],saved=bundle.results.results[0];
+ assert.deepEqual(item.comparison,{modelRmse:saved.rmse,persistenceRmse:saved.baselines.persistence.rmse});
+ assert.equal('rank' in item,false);
+});
+
+test('synthetic catalog never presents artificial errors as a prediction comparison',()=>{
+ const rootFlag=structuredClone(bundle);rootFlag.results.extensions={synthetic:true};
+ assert.equal(mapCatalog(rootFlag)[0].comparison,null);
+ const itemFlag=structuredClone(bundle);itemFlag.results.results[0].extensions={synthetic:true};
+ assert.equal(mapCatalog(itemFlag)[0].comparison,null);
+});

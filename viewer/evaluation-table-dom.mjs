@@ -63,7 +63,21 @@ export function evaluationTableDOM(document,model,options={}) {
   };
   selections.set(root,{model,buttons,renderDetail});
   updateEvaluationSelection(root,options.selectedBasinId??model.basins[0]?.basinId);
-  const technical=node('details');technical.append(node('summary','出所と実装の識別情報'),node('p',`予測ライブラリ：${model.libraryVersion} / データ処理ライブラリ：${model.dataLibraryVersion} / 形式版：${model.schemaVersion}`),node('pre',JSON.stringify(model.implementation,null,2)));root.append(technical);
+  const technical=node('details');technical.append(node('summary','出所と実装の識別情報'));
+  if(model.provenanceGroups?.length)technical.append(node('h3','統合物の識別情報'));
+  technical.append(node('p',`予測ライブラリ：${model.libraryVersion} / データ処理ライブラリ：${model.dataLibraryVersion} / 形式版：${model.schemaVersion}`),node('pre',JSON.stringify(model.implementation,null,2)));
+  if(model.provenanceGroups?.length){
+    technical.append(node('h3','グループ別の予測生成来歴'));
+    for(const group of model.provenanceGroups){
+      const names=group.basin_ids.map(id=>model.basins.find(b=>b.basinId===id)?.basinName??id).join('、');
+      technical.append(node('h4',`${group.kind==='preserved'?'既存の保存予測':'追加生成した予測'}：${names}`));
+      technical.append(node('p',`生成日時：${formatJST(group.generated_at)} JST / データ版：${group.dataset_version}`));
+      const identity={implementation:group.implementation};
+      for(const key of ['source_results_sha256','input_manifest_sha256'])if(group[key]!==undefined)identity[key]=group[key];
+      technical.append(node('pre',JSON.stringify(identity,null,2)));
+    }
+  }
+  root.append(technical);
   if(model.publicReleaseBlockers?.length){const notes=node('details'),list=node('ul');notes.append(node('summary','配布・公開に関する未確認事項'));for(const text of model.publicReleaseBlockers)list.append(node('li',blockerLabels[text]??text));notes.append(list);root.append(notes);}
   return root;
 }

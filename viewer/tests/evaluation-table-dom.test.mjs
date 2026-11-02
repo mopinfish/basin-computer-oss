@@ -63,3 +63,13 @@ test('different basin conditions remain visible in each overview row',()=>{
  assert.match(texts(overview),/2024\/01\/01/);assert.match(texts(overview),/2024\/02\/01/);
  assert.match(texts(overview),/合成/);assert.match(texts(overview),/保存結果/);
 });
+test('mixed provenance distinguishes bundle identity from preserved and generated predictions inside technical details',()=>{
+ const m=model();m.implementation={source_commit:'bundle-commit'};
+ m.provenanceGroups=[{basin_ids:['a'],kind:'preserved',generated_at:'2024-01-01T00:00:00Z',implementation:{source_commit:'preserved-commit'},dataset_version:'old',source_results_sha256:'original-hash'},{basin_ids:['new-basin'],kind:'generated',generated_at:'2024-02-01T00:00:00Z',implementation:{source_commit:'generated-commit'},dataset_version:'new',input_manifest_sha256:'input-hash'}];
+ const root=evaluationTableDOM(documentStub(),m),technical=descendants(root).find(n=>n.tag==='details'&&texts(n).includes('出所と実装の識別情報'));
+ const text=texts(technical);
+ for(const label of ['統合物の識別情報','グループ別の予測生成来歴','既存の保存予測','追加生成した予測','bundle-commit','preserved-commit','generated-commit','original-hash','input-hash','old','new','2024/02/01'])assert.ok(text.includes(label),label);
+ assert.match(text,/<img src=x onerror=bad\(\)>/);
+ assert.equal(descendants(technical).filter(n=>n.tag==='img').length,0);
+ assert.equal(root.children.some(n=>n.textContent==='グループ別の予測生成来歴'),false);
+});
