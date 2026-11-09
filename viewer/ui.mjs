@@ -294,6 +294,7 @@ export function resultReadingState(root,result) {
 /** Reset browsing controls only; callers keep basin, result and evaluation unchanged. */
 export function resetDisplayControls(controls) {
   controls.period.value='all';
+  if(controls.axis) controls.axis.value='individual';
   if(controls.observed) controls.observed.checked=true;
   if(controls.prediction) controls.prediction.checked=true;
   controls.persistence.checked=true;
@@ -309,4 +310,21 @@ export function originObservation(rows,row) {
 export function flowAxisBounds(rows,persistence,extraSeries=[]) {
   const series=[...chartSeries(persistence),...extraSeries.filter(item=>item.unit==='m³/s')];
   return valueBounds(rows.flatMap(row=>series.map(item=>item.valueOf(row))));
+}
+
+/** Common raw-unit axes across every saved basin and its full evaluation period. */
+export function sharedAxisBounds(bundle) {
+  let min=0,max=1.05,rainMax=1;
+  for(const result of bundle.results.results) {
+    const all=bundle.series[result.basin_id];
+    if(!Array.isArray(all)||all.length===0) throw new Error(`共通尺度に必要な流域 ${result.basin_id} のデータが不足しています`);
+    const rows=visibleRows(all,result);
+    if(!rows.length) throw new Error(`共通尺度に必要な流域 ${result.basin_id} の評価期間データが不足しています`);
+    const origins=new Map(all.map(row=>[Date.parse(row.target_time),row.q]));
+    const persistence=row=>row.partition==='test'&&row.accepted===true?origins.get(Date.parse(row.origin_time)):null;
+    const bounds=flowAxisBounds(rows,persistence,savedSeries(result,all));
+    min=Math.min(min,bounds.min);max=Math.max(max,bounds.max);
+    for(const row of rows) if(Number.isFinite(row.rain)) rainMax=Math.max(rainMax,row.rain);
+  }
+  return {flow:{min,max},rainMax:rainMax*1.1};
 }

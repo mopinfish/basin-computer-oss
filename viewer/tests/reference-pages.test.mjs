@@ -65,3 +65,8 @@ test('map entry receives the same safe scene envelope as reference pages',()=>{
  assert.equal(new URL(target,'https://local.test/demo/').pathname,'/demo/maps.html');
  assert.equal(viewerReturnHref(new URL(target,'https://local.test/demo/').search),'./'+scene);
 });
+
+test('shared-axis scene survives separate FAQ tab and return without losing conditions',()=>{
+ const query=scene+'&axis=shared';
+ assert.equal(viewerReturnHref(new URL(referencePageHref('faq.html',query),'https://local.test/').search),'./'+query);
+});

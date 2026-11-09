@@ -7,10 +7,10 @@ import {createSceneHistory} from './scene-history.mjs';
 import {buildEvaluationTable} from './evaluation-table.mjs';
 import {evaluationTableDOM,updateEvaluationSelection} from './evaluation-table-dom.mjs';
 import {bindViewTabs,restoreRemovedPanelFocus} from './view-tabs.mjs';
-import {flowAxisBounds,originObservation,formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
+import {sharedAxisBounds,flowAxisBounds,originObservation,formatJST,selectBasin,lineSegments,testPrediction,localProjection,metricLabel,displayPeriod,requireSixHourDemo,eventWindow,selectView,persistenceReference,initialInspectionIndex,inspectionKeyIndex,niceTicks,savedPersistence,displayError,inspectionScrollLeft,chartSeries,flowChartState,extensionDetails,savedSeries,seriesGroups,seriesReference,valueBounds,bindChartInspection,lineStyleLabel,adoptionReasonLabel,resultReadingState,resetDisplayControls,createInspectionNotice} from './ui.mjs';
 
 const $=id=>document.getElementById(id);
-let periodMenu;
+let periodMenu, commonAxes;
 const inspectionNotice=createInspectionNotice($('inspection-status'));
 let inspectorKeyboard=false;
 let customRange=null;
@@ -134,7 +134,7 @@ function changeBasin(id) {
 function currentScene() {
   const row=displayed[Number($('time-inspector').value)];
   return {v:'1',view:currentView,dataset:bundle.results.dataset_version,basin:selected.result.basin_id,h:6,
-    period:$('period-select').value,...(customRange??{}),...(overview.custom?{center:new Date(overview.center).toISOString()}:{}),at:new Date(row.target_time).toISOString(),
+    axis:$('axis-select').value,period:$('period-select').value,...(customRange??{}),...(overview.custom?{center:new Date(overview.center).toISOString()}:{}),at:new Date(row.target_time).toISOString(),
     series:extraSeries.filter(item=>selectedSeries.has(item.key)).map(item=>item.key),
     observed:$('observed-toggle').checked,prediction:$('prediction-toggle').checked,persistence:$('persistence-toggle').checked};
 }
@@ -151,9 +151,10 @@ function restoreScene({state,warnings}) {
   const previous=selected&&displayed.length?currentScene():null;
   overview.restore(state.period==='center'?state.center:null);
   customRange=state.period==='range'?{start:state.start,end:state.end}:null;
-  const sameDisplay=previous&&['basin','period','center','start','end','at','observed','prediction','persistence'].every(key=>previous[key]===state[key])&&JSON.stringify(previous.series)===JSON.stringify(state.series);
+  const sameDisplay=previous&&['basin','axis','period','center','start','end','at','observed','prediction','persistence'].every(key=>previous[key]===state[key])&&JSON.stringify(previous.series)===JSON.stringify(state.series);
   $('basin-select').value=state.basin;
   $('period-select').value=state.period;
+  $('axis-select').value=state.axis;
   $('observed-toggle').checked=state.observed;
   $('prediction-toggle').checked=state.prediction;
   $('persistence-toggle').checked=state.persistence;
@@ -161,7 +162,7 @@ function restoreScene({state,warnings}) {
   if(!sameDisplay) render();
   setView(state.view??'timeseries');
   restoreRemovedPanelFocus(previousPanelFocus,currentView,{timeseries:$('timeseries-tab'),evaluation:$('evaluation-tab')});
-  const labels={view:'表示画面',v:'URL形式',dataset:'データ版',basin:'流域',h:'先行時間',period:'表示期間',center:'表示の中心時刻',range:'指定期間',start:'開始日時',end:'終了日時',at:'参照時刻',series:'系列',observed:'観測',prediction:'6時間先予測',persistence:'持続予測',projection:'投影表示'};
+  const labels={axis:'縦軸',view:'表示画面',v:'URL形式',dataset:'データ版',basin:'流域',h:'先行時間',period:'表示期間',center:'表示の中心時刻',range:'指定期間',start:'開始日時',end:'終了日時',at:'参照時刻',series:'系列',observed:'観測',prediction:'6時間先予測',persistence:'持続予測',projection:'投影表示'};
   $('url-notice').textContent=warnings.map(item=>`${labels[item.field]??'URL項目'}：${item.message}`).join(' ');
   $('url-notice').hidden=warnings.length===0;
   syncReferenceLinks(document,window.location.search);
@@ -198,7 +199,7 @@ function drawCharts(rows) {
   const flowState=flowChartState(visibleFlowSeries);
   $('flow-empty').hidden=flowState.showYAxis;
   q.setAttribute('aria-label',flowState.ariaLabel);
-  const {min,max}=flowAxisBounds(rows,persistence,extraSeries);
+  const {min,max}=$('axis-select').value==='shared'?commonAxes.flow:flowAxisBounds(rows,persistence,extraSeries);
   const chart=axes(q,rows,235,min,max,flowState);
   const purged=rows.filter(row=>row.reason==='origin_before_cutoff');
   if(purged.length>0) {
@@ -222,7 +223,7 @@ function drawCharts(rows) {
     attachChartInspection(svg,scroll,235);
     section.append(node('p','単位が異なる系列は独立した縦軸に表示します。比較指標は算出しません。','chart-note'));separate.append(section);
   }
-  const rainMax=valueBounds(rows.map(row=>row.rain)).max/1.05*1.1;
+  const rainMax=$('axis-select').value==='shared'?commonAxes.rainMax:valueBounds(rows.map(row=>row.rain)).max/1.05*1.1;
   const rainAxes=axes(rain,rows,175,0,rainMax);
   const barWidth=Math.max(.3,rainAxes.x(Date.parse(rows[0].target_time)+3600000)-rainAxes.x(Date.parse(rows[0].target_time)));
   rows.forEach(row=>{
@@ -371,6 +372,7 @@ async function start() {
     bundle=await loadBundle('data/');
     periodMenu=bindPeriodMenu(document);
     requireSixHourDemo(bundle);
+    commonAxes=sharedAxisBounds(bundle);
     viewTabs=bindViewTabs({tabs:{timeseries:$('timeseries-tab'),evaluation:$('evaluation-tab')},panels:{timeseries:$('timeseries-panel'),evaluation:$('evaluation-panel')},onActivate:view=>{inspectionNotice.cancel();currentView=view;recordScene();}});
     evaluationRoot=evaluationTableDOM(document,buildEvaluationTable(bundle),{selectedBasinId:bundle.results.results[0].basin_id,onSelectBasin:changeBasin,onShowTimeseries:()=>{setView('timeseries');recordScene();}});
     $('evaluation-content').append(evaluationRoot);
@@ -379,15 +381,16 @@ async function start() {
       const option=node('option',basin.properties.name);option.value=item.basin_id;return option;
     }));
     $('basin-select').addEventListener('change',()=>changeBasin($('basin-select').value));
+    $('axis-select').addEventListener('change',()=>{try {const index=Number($('time-inspector').value);drawCharts(displayed);inspect(index);recordScene();} catch(error) {fail(error);}});
     $('period-select').addEventListener('change',()=>{overview.reset();customRange=null;$('range-details').open=false;render();recordScene();});
     for(const id of ['observed-toggle','prediction-toggle','persistence-toggle']) $(id).addEventListener('change',()=>{try {const index=Number($('time-inspector').value);drawCharts(displayed);inspect(index);recordScene();} catch(error) {fail(error);}});
     $('reset-display').addEventListener('click',()=>{
       overview.reset();customRange=null;$('range-details').open=false;
-      resetDisplayControls({period:$('period-select'),observed:$('observed-toggle'),prediction:$('prediction-toggle'),persistence:$('persistence-toggle')});
+      resetDisplayControls({axis:$('axis-select'),period:$('period-select'),observed:$('observed-toggle'),prediction:$('prediction-toggle'),persistence:$('persistence-toggle')});
       selectedSeries=new Set(extraSeries.map(item=>item.key));
       render();
       recordScene();
-      $('display-feedback').textContent='流域を維持し、期間・系列・参照時刻を標準表示へ戻しました。';
+      $('display-feedback').textContent='流域を維持し、期間・縦軸・系列・参照時刻を標準表示へ戻しました。';
     });
     function applyRange(days=null) {
       try {
