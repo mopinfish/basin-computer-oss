@@ -3,7 +3,7 @@ import {rangeWindow} from './range.mjs';
 import {initialInspectionIndex, selectView} from './ui.mjs';
 import {centeredWindow} from './overview.mjs';
 
-const KEYS = ['v', 'dataset', 'basin', 'h', 'view', 'period', 'center', 'start', 'end', 'at', 'series', 'observed', 'prediction', 'persistence', 'projection'];
+const KEYS = ['v', 'dataset', 'basin', 'h', 'view', 'period', 'center', 'start', 'end', 'at', 'series', 'observed', 'prediction', 'persistence', 'projection', 'axis'];
 const PERIODS = ['all', '7', '30', 'peak-rain', 'peak-q', 'center', 'range'];
 const warning = (field, message) => ({field, message});
 
@@ -48,7 +48,7 @@ function defaultState(bundle) {
   const initial = initialInspectionIndex(view.rows);
   if (!view.rows[initial]) throw new Error('URLで参照できる評価期間の保存値がありません');
   return {v: '1', dataset: bundle.results.dataset_version, basin: result.basin_id,
-    h: 6, view: 'timeseries', period: 'all', at: new Date(view.rows[initial].target_time).toISOString(),
+    h: 6, view: 'timeseries', axis: 'individual', period: 'all', at: new Date(view.rows[initial].target_time).toISOString(),
     series: (result.extensions?.series ?? []).map(item => item.id), observed: true, prediction: true, persistence: true};
 }
 
@@ -75,6 +75,10 @@ export function resolveScene(search, bundle) {
   if (Object.hasOwn(values, 'view')) {
     if (['timeseries', 'evaluation'].includes(values.view)) state.view = values.view;
     else warnings.push(warning('view', '表示画面が不正です。時系列を表示しました。'));
+  }
+  if (Object.hasOwn(values, 'axis')) {
+    if (['individual','shared'].includes(values.axis)) state.axis=values.axis;
+    else warnings.push(warning('axis','縦軸の指定が不正です。個別尺度を表示しました。'));
   }
   if (Object.hasOwn(values, 'period')) {
     if (PERIODS.includes(values.period)) state.period = values.period;
@@ -148,6 +152,7 @@ export function serializeScene(state) {
   const params = new URLSearchParams({v: '1', dataset: state.dataset, basin: state.basin,
     h: String(state.h), view: state.view ?? 'timeseries', period: state.period, at: new Date(instant).toISOString(),
     series: JSON.stringify(state.series), observed: state.observed === false ? '0' : '1', prediction: state.prediction === false ? '0' : '1', persistence: state.persistence ? '1' : '0'});
+  if(state.axis==='shared') params.set('axis','shared');
   if (state.period === 'center') {
     const center = targetInstant(state.center);
     if (center === null) throw new Error('中心時刻にはタイムゾーン付きの実在する日時が必要です');

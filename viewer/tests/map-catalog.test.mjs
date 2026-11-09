@@ -70,3 +70,14 @@ test('synthetic catalog never presents artificial errors as a prediction compari
  const itemFlag=structuredClone(bundle);itemFlag.results.results[0].extensions={synthetic:true};
  assert.equal(mapCatalog(itemFlag)[0].comparison,null);
 });
+
+test('another basin retains validated shared scale but resets period and inspection',()=>{
+ const b=structuredClone(bundle);b.results.results.push({...b.results.results[0],basin_id:'b'});
+ const scene='?v=1&dataset=test-candidate&basin=a&h=6&period=all&axis=shared';
+ const params=new URL(basinDetailHref(b,'b',scene),'https://local.test/').searchParams;
+ assert.equal(params.get('axis'),'shared');assert.equal(params.get('period'),null);assert.equal(params.get('at'),null);
+ assert.equal(basinDetailHref(b,'a',scene),'./'+scene);
+ for(const invalid of [scene.replace('axis=shared','axis=bad'),scene.replace('test-candidate','wrong')]) {
+  assert.equal(new URL(basinDetailHref(b,'b',invalid),'https://local.test/').searchParams.get('axis'),null);
+ }
+});

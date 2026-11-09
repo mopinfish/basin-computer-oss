@@ -9,11 +9,16 @@ export function mapRequest(search) {
 }
 export function basinDetailHref(bundle,id,scene='') {
   if(!bundle.results.results.some(item=>item.basin_id===id)) throw new Error('流域が見つかりません');
+  let axis='individual';
   if(scene) {
     const resolved=resolveScene(scene,bundle);
-    if(!resolved.fallback&&!resolved.warnings.length&&resolved.state.basin===id) return './'+scene;
+    if(!resolved.fallback&&!resolved.warnings.length) {
+      if(resolved.state.basin===id) return './'+scene;
+      axis=resolved.state.axis;
+    }
   }
   const params=new URLSearchParams({v:'1',dataset:bundle.results.dataset_version,basin:id,h:'6',view:'timeseries'});
+  if(axis==='shared') params.set('axis','shared');
   return './?'+params;
 }
 export function mapCatalog(bundle) {

@@ -11,7 +11,7 @@ function fixture() {
 
 test('empty URL preserves current defaults without warnings',()=>{
  const {state,warnings,fallback}=resolveScene('',fixture());
- assert.deepEqual(state,{v:'1',dataset:'test-v1',basin:'a',h:6,view:'timeseries',period:'all',at:'2024-01-01T01:00:00.000Z',series:['x','with,comma'],observed:true,prediction:true,persistence:true});
+ assert.deepEqual(state,{v:'1',dataset:'test-v1',basin:'a',h:6,view:'timeseries',axis:'individual',period:'all',at:'2024-01-01T01:00:00.000Z',series:['x','with,comma'],observed:true,prediction:true,persistence:true});
  assert.deepEqual(warnings,[]);assert.equal(fallback,false);
 });
 test('canonical serialization round trips including comma-bearing IDs and empty selection',()=>{
@@ -178,4 +178,12 @@ test('invalid display ranges warn and restore the full period without mutating s
   assert.equal(resolved.state.period,'all');assert.ok(resolved.warnings.some(w=>w.field==='range'));assert.equal(resolved.state.start,undefined);
  }
  assert.deepEqual(b,before);
+});
+
+test('axis mode defaults individually, round trips shared and rejects invalid values',()=>{
+ const b=fixture();assert.equal(resolveScene('',b).state.axis,'individual');
+ const state=resolveScene('?axis=shared&basin=b&period=7',b).state;
+ assert.equal(state.axis,'shared');assert.deepEqual(resolveScene(serializeScene(state),b).state,state);
+ assert.equal(resolveScene('?axis=invalid',b).state.axis,'individual');
+ assert.equal(resolveScene('?axis=invalid',b).warnings[0].field,'axis');
 });
